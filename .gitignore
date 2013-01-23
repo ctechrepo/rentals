@@ -1,0 +1,65 @@
+# Ignore OS Related/Generic
+Thumbs.db
+Desktop.ini
+._*
+Icon?
+.DS_Store
+*.bak
+*.tmproj
+*.tmproject
+*~
+
+# IDEs project files/settings
+nbproject/
+nbactions.xml
+.settings/
+.project
+.metadata
+.properties
+.idea
+
+# Ignore Bonfire Application Specifics
+bonfire/application/logs/*
+!bonfire/application/logs/index.html
+bonfire/application/cache/*
+!bonfire/application/cache/index.html
+assets/cache/*
+!assets/cache/index.html
+
+# Ignore Custom config files
+bonfire/application/config/development/*
+bonfire/application/config/testing/*
+bonfire/application/config/production/*
+
+# but leave the config folders there
+!bonfire/application/config/development/index.html
+!bonfire/application/config/testing/index.html
+!bonfire/application/config/production/index.html
+
+# Helping GUIs omiting subtree repos
+bonfire/modules/**/.git/*
+bonfire/modules/**/.hg/*
+
+# Ignore all custom modules.
+#bonfire/modules/*
+# Except the following modules:
+!bonfire/modules/rental_applications/*
+
+# Ignore PHPStorm Project folders
+bonfire/.ideas
+.idea/*
+
+# Ignore server config
+.htaccess
+1.htaccess
+
+# Ignore install files
+install_hide/*
+
+# Ignore application config files
+bonfire/application/config/config.php
+bonfire/application/config/database.php
+
+bonfire/db/*
+
+bonfire/application/config/*

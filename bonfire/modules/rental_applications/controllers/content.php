@@ -334,5 +334,13 @@
            Template::render();
        }
 
+       public function image_test()
+       {
+           $this->load->add_package_path(APPPATH.'third_party/phpThumb/');
+           $this->load->library('ThumbLib.inc');
+
+
+       }
+
    }
 ?>

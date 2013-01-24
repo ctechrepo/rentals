@@ -35,15 +35,15 @@ define('DEFAULT_THUMBLIB_IMPLEMENTATION', 'gd');
 /**
  * Include the PhpThumb Class
  */
-require_once THUMBLIB_BASE_PATH . '/PhpThumb.inc.php';
+//require_once THUMBLIB_BASE_PATH . '/PhpThumb.inc.php';
 /**
  * Include the ThumbBase Class
  */
-require_once THUMBLIB_BASE_PATH . '/ThumbBase.inc.php';
+//require_once THUMBLIB_BASE_PATH . '/ThumbBase.inc.php';
 /**
  * Include the GdThumb Class
  */
-require_once THUMBLIB_BASE_PATH . '/GdThumb.inc.php';
+//require_once THUMBLIB_BASE_PATH . '/GdThumb.inc.php';
 
 /**
  * PhpThumbFactory Object
@@ -103,7 +103,7 @@ class PhpThumbFactory
 	 * @uses PhpThumb
 	 * @param string $filename The path and file to load [optional]
 	 */
-	public static function create ($filename = null, $options = array(), $isDataStream = false)
+public static function create ($filename = null, $options = array(), $isDataStream = false)
 	{
 		// map our implementation to their class names
 		$implementationMap = array

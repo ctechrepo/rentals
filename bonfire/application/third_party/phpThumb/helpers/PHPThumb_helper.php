@@ -34,7 +34,7 @@ $cache_life = '-1 month';
 
 
 
-
+/*
 $params = array('src'=>false, 'w'=>false, 'h'=>false);
 $options = array('resizeUp'=>true,'jpegQuality'=>100,'cache_life'=>$cache_life);
 extract(array_merge($params, $options, $_GET));
@@ -68,3 +68,4 @@ else
 
 $thumb->show();
 flush();
+*/

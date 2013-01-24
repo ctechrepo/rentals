@@ -7,7 +7,7 @@
 
 // 
 // The path to PHPThumb
-require_once 'ThumbLib.inc.php';
+require_once __DIR__.'/../ThumbLib.inc.php';
 
 // 
 // The path to your web root
@@ -15,11 +15,12 @@ $document_path = '/'.trim($_SERVER['DOCUMENT_ROOT'], '/').($_SERVER['DOCUMENT_RO
 
 // 
 // The path to your cache folder
-$cache_path = '/Users/markhuot/Sites/PHPThumb/cache/';
+//$cache_path = '/Users/markhuot/Sites/PHPThumb/cache/';
+$cache_path = '/assets/cache/';
 
 // 
 // The URI to your cache folder
-$cache_uri = 'http://'.trim($_SERVER['HTTP_HOST'], '/').'/cache/';
+$cache_uri = 'http://'.trim($_SERVER['HTTP_HOST'], '/').'/assets/cache/';
 
 // 
 // How long caches should live. Remember, hard refreshes will also clear out your cache so you'll be

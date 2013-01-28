@@ -160,8 +160,7 @@ if (is_dir(dirname(__FILE__).'/install') == true)
  *
  */
 	// $assign_to_config['name_of_config_item'] = 'value of config item';
-
-
+    define('ROOTPATH',__DIR__);
 
 // --------------------------------------------------------------------
 // END OF USER CONFIGURABLE SETTINGS.  DO NOT EDIT BELOW THIS LINE

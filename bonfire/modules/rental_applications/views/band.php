@@ -3,29 +3,34 @@
         <!--controls-->
         <!--crumbtrail-->
     </div>
-<div class="row-fluid">
-
+<div class="row-fluid well-large">
 <?php if ($page==1):?>
 <h3>Select Instrument</h3>
     <?php //var_dump($instruments); ?>
+<div class="span11 offset1">
 <?php foreach($instruments as $instrument):?>
+  <div class="pull-left well-small" >
   <a href="<?php echo $instrument_url. 'instrument=' .$instrument->product_id;?>" class="instrument_link">
       <!---description--->
-      <p><?php echo $instrument->product_name;?></p>
+      <h4 style="width:150px; text-align: center; height: 3em;"><?php echo $instrument->product_name;?></h4>
       <!---img-->
-      <p><img src="<?php echo base_url('assets/uploads/files/'.$instrument->product_photo_url);?>" height="120px"/></p>
-
+      <p><img src="<?php echo base_url('assets/cache/thumbs/150_150_'.$instrument->product_photo_url);?>" height="150px" width="150px"/></p>
   </a>
+  </div>
 <?php endforeach;?>
+<div class="clearfix"></div>
+</div>
 <?php endif; ?>
 
 
 <?php if ($page==2):?>
     <?//var_dump($selected_instrument);?>
-<h3>Instrument: <?php echo $selected_instrument->product_name; ?></h3>
-
+    <div class="span3">
     <p><img src="<?php echo base_url('assets/uploads/files/'.$selected_instrument->product_photo_url);?>"/></p>
-
+    </div>
+    <div class="span7">
+    <h3>Instrument: <?php echo $selected_instrument->product_name; ?></h3>
+    <p></p>
     <?php echo $plan_description; ?>
 
     <?php if (!empty($rent_own_url)):?>
@@ -34,6 +39,7 @@
     <?php if (!empty($rent_only_url)):?>
     <a href="<?php echo $rent_only_url;?>">Rent Only</a>
     <?php endif;?>
+    </div>
 <?php endif; ?>
 
 

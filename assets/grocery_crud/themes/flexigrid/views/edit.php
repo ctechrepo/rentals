@@ -76,6 +76,7 @@
 	var message_update_error = "<?php echo $this->l('update_error')?>";
 </script>
 
+<?php if( function_exists('get_dir_file_info') ): ?>
 <div id="uploadsManager" class="modal hide fade">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -90,11 +91,13 @@
             if (preg_match('/image/i',$mime) > 0)
             {
                 $image_properties = array(
-                    'src' => 'assets/uploads/files/'.$file['name'],
+                    'src' => 'assets/cache/thumbs/'.'150_150_'.$file['name'],
                     'height' => '150',
+                    'width' => '150',
                     'alt' => 'uploaded image'
                 );
                 echo '<div class="modal-file-images">';
+                echo "<div style='width:150px; text-align: center; '>{$file['name']}</div>";
                 echo img($image_properties);
                 echo "<input type='hidden' value='{$file['name']}' /> ";
                 echo '</div>';
@@ -107,3 +110,4 @@
         <button type="button" class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
     </div>
 </div>
+<?php endif; ?>

@@ -1029,9 +1029,10 @@ class GdThumb extends ThumbBase
 	 */
 	public function save ($fileName, $format = null)
 	{
-		$validFormats = array('GIF', 'JPG', 'PNG');
+
+        $validFormats = array('GIF', 'JPG', 'PNG');
 		$format = ($format !== null) ? strtoupper($format) : $this->format;
-		
+
 		if (!in_array($format, $validFormats))
 		{
 			throw new InvalidArgumentException ('Invalid format type specified in save function: ' . $format);
@@ -1057,7 +1058,7 @@ class GdThumb extends ThumbBase
 				throw new RuntimeException ('File not writeable: ' . $fileName);
 			}
 		}
-		
+
 		// When the interlace option equals true or false call imageinterlace else leave it to default
 		if ($this->options['interlace'] === true)
 			imageinterlace($this->oldImage, 1);

@@ -18,7 +18,7 @@
 
        }
 
-       //helper methods
+       //----------------helper methods-----------------------------------------------------
 
        /**
         * Injects the Grocery CRUD assets into the template.
@@ -38,12 +38,33 @@
            }
        }
 
-       //----------------------------------------------------------------
-
-       public function test()
+       /**
+        * Generates a thumbnail.
+        * @param $image
+        * @param $width
+        * @param $height
+        * @return GdThumb
+        */
+       private function thumbnail($image,$width,$height)
        {
-         Template::render();
+           $this->load->add_package_path(APPPATH.'third_party/phpThumb/');
+           $this->load->helper('PHPThumb');
+
+           $image_path = ROOTPATH.'/assets/uploads/files/';
+           $folder_path = ROOTPATH.'/assets/cache/thumbs/';
+           $save = $folder_path.$width .'_'. $height.'_'.$image;//full path of then new image.
+
+           //create, resize, and save the thumbnail
+           $thumb = PhpTHumbFactory::create($image_path.$image)
+               ->adaptiveResize($width,$height)
+               ->save($save);
+
+           return $thumb;
        }
+
+       //----------------end of helpers ------------------------------------------------
+
+       //-----------------pages---------------------------------------------------------
 
        /**
         * Content index page
@@ -334,13 +355,7 @@
            Template::render();
        }
 
-       public function image_test()
-       {
-           $this->load->add_package_path(APPPATH.'third_party/phpThumb/');
-           $this->load->helper('PHPThumb');
-
-
-       }
+       //-------------end of pages-------------------------------------------
 
    }
 ?>

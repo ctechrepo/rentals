@@ -80,6 +80,7 @@ class product_model extends MY_Model{
 
         $this->db->join($r_table,"{$r_table}.product_id = {$p_table}.product_id");
         $this->db->join($rp_table,"{$r_table}.rentalplan_id = {$rp_table}.rentalplan_id");
+        $this->db->order_by("product_name","asc");
         $this->db->where('rentalplan_name',$rental_plan);
         $query = $this->db->get($p_table);
 
@@ -89,6 +90,37 @@ class product_model extends MY_Model{
         }
 
         return array();
+    }
+
+    /**
+     * Generates a thumbnail of an image using adaptive resizing.
+     * @param $image
+     * @param $width
+     * @param $height
+     * @return GdThumb
+     */
+    public function thumbnail($uploader_response,$field_info,$files_to_upload)
+    {
+        $this->load->add_package_path(APPPATH.'third_party/phpThumb/');
+        $this->load->helper('PHPThumb');
+
+        //TODO MAKE variables dynamic
+        $width = 150;
+        $height = 150;
+        $color = array(255,255,255);
+
+        $image = $uploader_response[0]->name;
+        $image_path = ROOTPATH.'/assets/uploads/files/';
+        $folder_path = ROOTPATH.'/assets/cache/thumbs/';
+        $save = $folder_path.$width.'_'.$height.'_'.$image;
+
+        //create, resize, and save the thumbnail
+        PhpTHumbFactory::create($image_path.$image)
+            ->resize($width,$height)
+            ->pad($width,$height,$color)
+            ->save($save);
+
+        return true;
     }
 
 
@@ -150,6 +182,9 @@ class product_model extends MY_Model{
             ->fields($cols[1],$cols[2],$cols[3],$cols[4],$cols[5],$cols[6],'Accessories')
             ->set_field_upload($cols[4],'assets/uploads/files')
         ;
+
+
+        $this->crud->callback_after_upload(array($this,'thumbnail'));
 
         $this->crud->unset_jquery();
 

@@ -15,11 +15,17 @@
  */
 class Rental_applications extends Front_Controller
 {
-
+    private $sales_tax;
+    private $interest_rate;
 
     public function __construct(){
         parent::__construct();
         $this->output->enable_profiler(TRUE);//debugger (profiler's appearence is control by bonfire)
+
+        $this->config->load('rental_applications');
+        $this->sales_tax = $this->config->item('sales_tax');
+        $this->interest_rate = $this->config->item('interest_rate');
+
     }
 
     /**
@@ -110,6 +116,7 @@ class Rental_applications extends Front_Controller
         $reference_information = array();
         $payment_information = array();
         $terms_information = array();
+        $m_r_information = array();//maintenance and replacement
 
         $add_to = null;//reference pointer
 
@@ -121,6 +128,7 @@ class Rental_applications extends Front_Controller
             foreach ($sections as $item)
             {
                 //assign the correct array to the pointer
+                //echo $item->formsection_name;
                 switch($item->formsection_name)
                 {
                     case "General Information": $add_to =& $general_information;
@@ -135,6 +143,8 @@ class Rental_applications extends Front_Controller
                             break;
                     case "terms": $add_to =& $terms_information;
                           break;
+                    case "Maintenance and Replacement": $add_to =& $m_r_information;
+                    break;
                 }
                 //populate the array -- pass by the pointer
                 array_push($add_to,$item);
@@ -143,12 +153,14 @@ class Rental_applications extends Front_Controller
                 }
             }
         }
+        //die();
         Template::set('general_information',$general_information);
         Template::set('employer_information',$employer_information);
         Template::set('spouse_information',$spouse_information);
         Template::set('reference_information',$reference_information);
         Template::set('payment_information',$payment_information);
         Template::set('terms_information',$terms_information);
+        Template::set('m_r_information',$m_r_information);
 
 
         switch($page)

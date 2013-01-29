@@ -26,7 +26,7 @@
 <?php if ($page==2):?>
     <?//var_dump($selected_instrument);?>
     <div class="span3">
-    <p><img src="<?php echo base_url('assets/uploads/files/'.$selected_instrument->product_photo_url);?>"/></p>
+    <p><img class="pull-right" src="<?php echo base_url('assets/uploads/files/'.$selected_instrument->product_photo_url);?>"/></p>
     </div>
     <div class="span7">
     <h3>Instrument: <?php echo $selected_instrument->product_name; ?></h3>
@@ -67,8 +67,11 @@
 
     <p> M&R will be included with the rental of any string instrument.</p>
 
-    //TODO make optional
-    <p>Price: $<?php echo $m_r_price;?></p>
+     <strong>
+     <?php if (! empty($m_r_information) ): ?>
+        <input type="checkbox" name="<?php echo $m_r_information[1][0]->formfield_label; ?>" id="optional_m_r" checked="checked"/> Include this option in my rental.
+     <?php endif; ?>
+     Price: $<?php echo $m_r_price;?></strong>
     <?php endif; ?>
 
 
@@ -80,6 +83,11 @@
         <option value="<?php echo $school->school_id; ?>"><?php echo $school->school; ?></option>
 
     <?php endforeach;?></select>
+
+    <?php $this->load->config('rental_applications'); ?>
+
+    <?php echo $this->config->item('sales_tax'); ?>
+    <?php var_dump($this->config) ?>
 
     <?php //var_dump($accessories);?>
 

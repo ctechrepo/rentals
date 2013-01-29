@@ -2,8 +2,6 @@ $(function(){
 	
 	var save_and_close = false;
 
-    $('#uploadsModal').modal({show:false});
-
     $('span.manage-uploads').click(function(){
         $('#uploadsModal').modal('show');
     });
@@ -140,3 +138,26 @@ function goToList()
 
     });
 })(jQuery)
+
+CKEDITOR.plugins.registered['save']=
+{
+    init : function( editor )
+    {
+        var command = editor.addCommand( 'save',
+            {
+                modes : { wysiwyg:1, source:1 },
+                exec : function( editor ) {
+                    //var fo=editor.element.$.form;
+                    //editor.updateElement();
+                    $('#crudForm').submit();
+                }
+            }
+        );
+        editor.ui.addButton( 'Save',
+            {
+            label : 'My Save',
+            command : 'save'
+            }
+        );
+    }
+}

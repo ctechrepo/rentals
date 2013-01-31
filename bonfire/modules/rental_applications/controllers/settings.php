@@ -169,7 +169,7 @@ class settings extends Admin_Controller{
         }**/
 
 
-/*
+
 
         $query = $org_db->get('instrumentrental_accessories');
 
@@ -178,17 +178,23 @@ class settings extends Admin_Controller{
             foreach($query->result() as $result){
 
                 $product_data = array(
-                    'product_name'=> $result->accessoryname,
-                    'product_description'=>$result->accessorydescription,
-                    'product_price'=>$result->price,
-                    'product_sku' => $result->sku,
+                    //'product_name'=> $result->accessoryname,
+                    //'product_description'=>$result->accessorydescription,
+                    //'product_price'=>$result->price,
+                    //'product_sku' => $result->sku,
+                    'product_photo_url' => $result->photo,
                 );
 
-            $new_db->insert('bf_product',$product_data);
+                //var_dump($product_data);
+
+                $new_db->where('product_name',$result->accessoryname);
+                $new_db->where('product_price',$result->price);
+                $new_db->where('product_sku',$result->sku);
+                $new_db->update('bf_product',$product_data);
             }
         }
 
-
+        /*
         $query = $org_db->get('stringsrental_accessories');
 
         if ($query->num_rows() > 0)

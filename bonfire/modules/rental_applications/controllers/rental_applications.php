@@ -26,6 +26,14 @@ class Rental_applications extends Front_Controller
         $this->sales_tax = $this->config->item('sales_tax');
         $this->interest_rate = $this->config->item('interest_rate');
 
+        $this->load->helper('html');
+        $this->load->helper('file');
+
+
+        $this->load->add_package_path(APPPATH.'third_party/phpThumb/');
+        $this->load->helper('PHPThumb');
+        Template::set('thumbnail',new Thumbnail());
+        Assets::add_module_js('rental_applications','rental_applications.js');
     }
 
     /**
@@ -91,6 +99,12 @@ class Rental_applications extends Front_Controller
 
             $accessories = $this->get_accessories($instrument_id);
             Template::set('accessories',$accessories);
+
+            $this->load->model('organization_model');
+            $schools = $this->organization_model->find_all();
+            Template::set('schools',$schools);
+
+
 
             Template::set('two_months_rental',number_format($rental_details->two_month_price,2));
         }
@@ -689,6 +703,39 @@ class Rental_applications extends Front_Controller
         //TODO add cache control statement
 
         return $this->rentalform->getForms(1);
+    }
+
+
+}
+
+
+class Thumbnail
+{
+    public function  __construct()
+    {
+
+    }
+
+    /**
+     * Generates a thumbnail.
+     * @param $image
+     * @param $width
+     * @param $height
+     * @return GdThumb
+     */
+    public function make($image,$width=150,$height=150,$color=array(255,255,255))
+    {
+        $image_path = ROOTPATH.'/assets/uploads/files/';
+        $folder_path = ROOTPATH.'/assets/cache/thumbs/';
+        $save = $folder_path.$width .'_'. $height.'_'.$image;//full path of then new image.
+
+        //create, resize, and save the thumbnail
+        $thumb = PhpTHumbFactory::create($image_path.$image)
+            ->resize($width,$height)
+            ->pad($width,$height,$color)
+            ->save($save);
+
+        return $thumb;
     }
 
 }

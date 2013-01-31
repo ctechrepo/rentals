@@ -76,27 +76,62 @@
 
 
     <?php if ($page==5):?>
+    <div class="span11">
     <h3>Accessories</h3>
-    //TODO School Filter
-    <select name="school_filter"><?php foreach($schools as $school):?>
 
-        <option value="<?php echo $school->school_id; ?>"><?php echo $school->school; ?></option>
+        <p>Choose any accessories you would like to include with your rental.</p>
+    <hr/>
+    <strong>School: </strong>
+    <select name="school_filter">
+        <option value="-1">No School Selected</option>
+    <?php foreach($schools as $school):?>
+
+        <option value="<?php echo $school->organization_id; ?>"><?php echo $school->organization_name; ?></option>
 
     <?php endforeach;?></select>
+    <p>
+        Selecting your school will display a recommended list of accessories that your school's band director recommends.
+        If you do not wish to add the accessory to your rental agreement, simply uncheck the box next to the accessory.
+        You may deselect the school by choosing “Remove School Selection.”
+    </p>
+    <hr/>
+    <div class="row-fluid"></div>
+    <div class="span8">
+        <?php foreach($accessories as $accessory):?>
 
-    <?php $this->load->config('rental_applications'); ?>
+        <div class="row-fluid">
+        <div class="span3">
 
-    <?php echo $this->config->item('sales_tax'); ?>
-    <?php var_dump($this->config) ?>
+           <?php
+            $image_path = 'assets/cache/thumbs/150_150_'.$accessory->product_photo_url;
+            $upload_path = 'assets/uploads/files/'.$accessory->product_photo_url;
 
-    <?php //var_dump($accessories);?>
+            //if the upload exist and the thumbnail doesn't --make the thumbnail!
+            if (read_file($upload_path) && ! read_file($image_path))
+            {
+                $thumbnail->make($accessory->product_photo_url);
+            }
+            if (read_file($image_path) ) echo img($image_path);
+            ?>
+        </div>
 
-    <?php foreach($accessories as $accessory):?>
+        <div class="span9">
+        <strong><?php echo $accessory->product_name; ?></strong>
+        <small> SKU: <?php echo $accessory->product_sku; ?></small>
+        <p><input type="checkbox" value="<?php echo $accessory->accessory_id;?>" /> Include with my rental</p>
+        <p><?php echo $accessory->product_description; ?></p>
+        <br/>
+        </div>
 
-        <p><input type="checkbox" value="<?php echo $accessory->accessory_id;?>" /> <?php echo $accessory->product_name; ?></p>
+        </div>
+        <hr/>
+        <?php endforeach; ?>
+    </div>
+    <div class="span3">
+        <img src="<?php echo base_url('assets/uploads/files/'.$selected_instrument->product_photo_url);?>"/>
+    </div>
 
-    <?php endforeach; ?>
-
+    </div>
     <?php endif; ?>
 
 

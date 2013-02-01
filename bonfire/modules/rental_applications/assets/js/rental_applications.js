@@ -37,24 +37,28 @@ baseUrl = "//localhost:8888/rentals/rental_applications/";
   });
 
   $(".btn-next").click(function(){
-      gotoPage(page+1);
+      gotoPage(page,page+1);
   });
 
   $(".btn-prev").click(function(){
-      gotoPage(page-1);
+      gotoPage(page,page-1);
   });
 
- function gotoPage(page)
+ function gotoPage(from,to)
  {
-   //var params = $("#pageData").serialize();
-   var params = {ci_csrf_token : csrf_token};
-   console.log(params);
+   var params = $(".pageData").serialize();
+   params += '&ci_csrf_token='+csrf_token;
+   params += '&resource='+resource;
+   params += '&pageFrom='+from;
+   params += '&pageTo='+to;
+
    $.ajax({
        type:"POST",
        url: ajaxController+'page',
        data: params,
        success: function(data){
-           window.location = baseUrl+resource+'/page/'+page;
+           console.log(data);
+           //window.location = baseUrl+resource+'/page/'+page;
        },
        dataType: 'json'
    })

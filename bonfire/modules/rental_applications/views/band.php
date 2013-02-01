@@ -124,7 +124,7 @@
         <strong><?php echo $accessory->product_name; ?></strong>
         <small> SKU: <?php echo $accessory->product_sku; ?></small>
         <p>Price: $ <?php echo number_format($accessory->product_price,2);?></p>
-        <p><input type="checkbox" value="<?php echo $accessory->accessory_id;?>" /> Include with my rental</p>
+        <p><input type="checkbox" name="accessories[]" value="<?php echo $accessory->accessory_id;?>" /> Include with my rental</p>
         <p><?php echo $accessory->product_description; ?></p>
         <br/>
         </div>

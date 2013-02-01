@@ -64,6 +64,24 @@ class Ajax extends Front_Controller
      */
     public function page(){
        $this->response['error'] = 'none';
+
+       $resource = $this->input->post('resource');
+       $page_from = $this->input->post('pageFrom');
+       $page_to = $this->input->post('pageTo');
+
+       if ($resource === 'band' || $resource === 'orchestra')
+       {
+           $accessories = $this->input->post('accessories');
+
+           if ($accessories !== FALSE){
+               $this->session->set_userdata('accessories',$accessories);
+           } elseif ($page_from == 5) {
+               $this->session->unset_userdata('accessories');
+           }
+
+       }
+       $this->response['accessories_post'] = $accessories;
+       $this->response['accessories_save'] = $this->session->userdata('accessories');
        echo json_encode($this->response);
     }
 }

@@ -35,8 +35,6 @@ class Rental_applications extends Front_Controller
         Template::set('thumbnail',new Thumbnail());
         Assets::add_module_js('rental_applications','jquery.cookie.js');
         Assets::add_module_js('rental_applications','rental_applications.js');
-
-        //$csrf_token = $this->config->item('')
     }
 
     /**

@@ -55,4 +55,15 @@ class Ajax extends Front_Controller
 
         echo json_encode($this->response);
     }
+
+    /**
+     * Ajax pagination request.
+     *
+     * @POST - data needs to be updated
+     * @RESPONSE - json
+     */
+    public function page(){
+       $this->response['error'] = 'none';
+       echo json_encode($this->response);
+    }
 }

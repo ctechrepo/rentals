@@ -33,7 +33,10 @@ class Rental_applications extends Front_Controller
         $this->load->add_package_path(APPPATH.'third_party/phpThumb/');
         $this->load->helper('PHPThumb');
         Template::set('thumbnail',new Thumbnail());
+        Assets::add_module_js('rental_applications','jquery.cookie.js');
         Assets::add_module_js('rental_applications','rental_applications.js');
+
+        //$csrf_token = $this->config->item('')
     }
 
     /**
@@ -59,6 +62,9 @@ class Rental_applications extends Front_Controller
 
         $page = $this->uri->segment(4)?$this->uri->segment(4):1; //check_uri for current_page
         $skip_page3 = TRUE;
+
+        Template::set('page',$page);
+        Template::set('resource','band');
 
         $input = $this->input->get('instrument'); //get variable instrument
         $instrument_id = empty($input)?$this->get_userdata('instrument_id'):$input;

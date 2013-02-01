@@ -17,10 +17,12 @@
 class Ajax extends Front_Controller
 {
 
-    private $response;
+    private $response = array();
 
     public function __construct(){
-
+       /* if (!$this->input->is_ajax_request()) {
+            exit('No direct script access allowed');
+        }*/
     }
 
     /**
@@ -32,10 +34,24 @@ class Ajax extends Front_Controller
      */
     public function accessories(){
 
-
         $school = $this->input->get('school');
+        $instrument = $this->input->get('instrument');
 
-        $this->response['school'] = $school;
+        if($instrument > 0)
+        {
+
+            if ($school > 0)
+            {
+                $this->load->model('organization_recommendation_model','org_recommends');
+                $the_list = $this->org_recommends->get_list($school,$instrument);
+            } else {
+                $the_list = array();
+            }
+        }
+
+        $this->response['list'] = json_encode($the_list);
+        $this->response['school']=$school;
+        $this->response['instrument']=$instrument;
 
         echo json_encode($this->response);
     }

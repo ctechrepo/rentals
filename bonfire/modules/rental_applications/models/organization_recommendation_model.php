@@ -6,7 +6,7 @@ class organization_recommendation_model extends MY_Model{
     {
         parent::__construct();
         $this->table = 'organization_recommendation';
-        $this->set_key('organization_id,product_id');
+        $this->set_key('organization_id,product_id,accessory_id');
 
 
         $this->fields = array(
@@ -18,10 +18,9 @@ class organization_recommendation_model extends MY_Model{
                 'type'=>'INT',
                 'unsigned'=>TRUE,
             ),
-            'product_type' => array(
-                'type'=>'ENUM',
-                'constraint'=>"'product','accessory'",
-                'default'=>'accessory',
+            'accessory_id' => array(
+                'type'=>'INT',
+                'unsigned'=>TRUE,
             ),
 
         );
@@ -45,30 +44,44 @@ class organization_recommendation_model extends MY_Model{
         //field names
         $cols = array_keys($this->fields);
 
-        $relation_tabel1 = $this->db->dbprefix('organization');
-        $relation_tabel2 = $this->db->dbprefix('product');
+        $organization = $this->db->dbprefix('organization');
+        $product = $this->db->dbprefix('product');
 
         $this->crud
             ->set_subject('Recommendation')
-            ->set_relation($cols[0],$relation_tabel1,'Organization_name')
-            ->set_relation($cols[1],$relation_tabel2,'Product_name')
+            ->set_relation($cols[0],$organization,'Organization_name')
+            ->set_relation($cols[1],$product,'Product_name')
+            ->set_relation($cols[2],$product,'Product_name')
+            //->set_self_referencing(TRUE) //all 3 tables include product_id field -- this hack resolves the conflict in the n_n relation
+            //->set_relation_n_n($cols[2],$relation_table3,$relation_table2,'accessory_id','product_id','product_name')
             ->columns(
             $cols[0],
             $cols[1],
             $cols[2]
         )
-
             ->display_as($cols[0],'Organization')
             ->display_as($cols[1],'Product')
-            ->display_as($cols[2],'Product Type')
+            ->display_as($cols[2],'Accessory')
 
-
-
+            //->callback_insert(array($this,'insert_callback'))
         ;
-        //$crud->fields();
-        //$crud->required_fields();
 
         return $this->crud->render();
+    }
+
+    public function get_list($organization_id,$product_id)
+    {
+        $_table = $this->db->dbprefix($this->table);
+        $product_table = $this->db->dbprefix('product');
+
+        $this->db->where($_table.'.organization_id',$organization_id);
+        $this->db->where($_table.'.product_id',$product_id);
+        $this->db->join($product_table,"{$_table}.accessory_id = {$product_table}.product_id ",'left');
+        $query = $this->db->get($_table);
+
+        $the_list = ($query->num_rows() > 0)?$query->result():array();
+
+        return $the_list;
     }
 }
 /**

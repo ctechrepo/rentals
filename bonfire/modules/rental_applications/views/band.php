@@ -82,13 +82,16 @@
         <p>Choose any accessories you would like to include with your rental.</p>
     <hr/>
     <strong>School: </strong>
-    <select name="school_filter">
+    <form id="recommendations" method="get" action="#">
+    <select name="school">
         <option value="-1">No School Selected</option>
     <?php foreach($schools as $school):?>
 
         <option value="<?php echo $school->organization_id; ?>"><?php echo $school->organization_name; ?></option>
 
     <?php endforeach;?></select>
+        <input type='hidden' name="instrument" value="<?php echo $selected_instrument->product_id;?>"/>
+    </form>
     <p>
         Selecting your school will display a recommended list of accessories that your school's band director recommends.
         If you do not wish to add the accessory to your rental agreement, simply uncheck the box next to the accessory.
@@ -96,7 +99,7 @@
     </p>
     <hr/>
     <div class="row-fluid"></div>
-    <div class="span8">
+    <div class="span8" id="accessories">
         <?php foreach($accessories as $accessory):?>
 
         <div class="row-fluid">
@@ -118,6 +121,7 @@
         <div class="span9">
         <strong><?php echo $accessory->product_name; ?></strong>
         <small> SKU: <?php echo $accessory->product_sku; ?></small>
+        <p>Price: $ <?php echo number_format($accessory->product_price,2);?></p>
         <p><input type="checkbox" value="<?php echo $accessory->accessory_id;?>" /> Include with my rental</p>
         <p><?php echo $accessory->product_description; ?></p>
         <br/>

@@ -61,7 +61,11 @@ class organization_model extends MY_Model
         //field names
         $cols = array_keys($this->fields);
 
+        $relation_table = $this->db->dbprefix('organization_recommendation');
+        $selection_table = $this->db->dbprefix('accessory');
         $this->crud
+            //->set_self_referencing(TRUE)
+            ->set_relation_n_n('Recommendations',$relation_table,$selection_table,'organization_id','product_id','accessory_id')
             ->columns(
             $cols[0],
             $cols[1]
@@ -76,6 +80,7 @@ class organization_model extends MY_Model
 
         return $this->crud->render();
     }
+
 }
 /**
  * Created by CTech.

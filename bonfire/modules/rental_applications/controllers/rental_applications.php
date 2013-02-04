@@ -100,20 +100,35 @@ class Rental_applications extends Front_Controller
                 'platinum'=>$rental_details->platinum_price
             );
 
-            $prices = array_map(function($val){
-                 if ($val >= 0){
-                     global $skip_page3;
-                     $skip_page3= FALSE;
-                     return $val;}
-                 return NULL;
-            },$rent_to_own);
+            $plan_values = array_values($rent_to_own);
+
+            $count = 0;
+            while ($skip_page3 && $count < count($plan_values))
+            {
+                if ($plan_values[$count] != NULL && $plan_values[$count] > 0)
+                    $skip_page3 = FALSE;
+                    $count ++;
+            }
 
             $m_r_price = $rental_details->maintenance_price + $rental_details->replacement_price;
             Template::set('m_r_price',number_format($m_r_price,2));
 
 
-            $monthly_rental = $skip_page3?$rental_details->rent_only_price:'';
+            //TODO FIX Rental Price
+            $monthly_rental = $skip_page3?$rental_details->rent_only_price:0;
             Template::set('monthly_rental',number_format($monthly_rental,2));
+
+            if ($skip_page3 === FALSE)
+            {
+                Template::set('rent_own_url',site_url('rental_applications/band/page/3'));
+                Template::set('rent_to_own', $rent_to_own);
+            }
+
+            if ($rental_details->rent_only_price > 0)
+            {
+                Template::set('rent_only_url',site_url('rental_applications/band/page/4'));
+            }
+
 
             $accessories = $this->get_accessories($instrument_id);
             Template::set('accessories',$accessories);

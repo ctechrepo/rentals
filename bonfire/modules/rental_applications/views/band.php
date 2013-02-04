@@ -1,7 +1,9 @@
 <section id="rental_application" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
     <div class="row-fluid">
         <!--controls-->
+        <?php if ($page >=4): ?>
         <div class="pull-right"><button class="btn btn-prev">Prev</button><button class="btn btn-success btn-next">Next</button></div>
+        <?php endif; ?>
         <!--crumbtrail-->
     </div>
 <div class="row-fluid well-large">
@@ -33,21 +35,75 @@
     <h3>Instrument: <?php echo $selected_instrument->product_name; ?></h3>
     <p></p>
     <?php echo $plan_description; ?>
-
-    <?php if (!empty($rent_own_url)):?>
-    <a href="<?php echo $rent_own_url;?>">Rent To Own</a>
+    <p></p>
+    <?php if (!empty($rent_own_url)):
+     $image_properties = array(
+           'src' => 'assets/images/own.gif',
+           'alt' => 'Rent-to-Own'
+        );?>
+    <a href="<?php echo $rent_own_url;?>"><?php echo img($image_properties);?></a>
     <?php endif;?>
-    <?php if (!empty($rent_only_url)):?>
-    <a href="<?php echo $rent_only_url;?>">Rent Only</a>
+    <?php if (!empty($rent_only_url)):
+     $image_properties = array(
+        'src' => 'assets/images/rent.gif',
+        'alt' => 'Rent-to-Rent'
+        );?>
+    <a href="<?php echo $rent_only_url;?>"><?php echo img($image_properties);?></a>
     <?php endif;?>
     </div>
 <?php endif; ?>
 
 
 <?php if ($page==3):?>
-<h3>Instrument Level</h3>
+<h3>Choose which level of Instrument you would like</h3>
+<div class="row-fluid">
+<div class="span6"><hr/></div>
+</div>
 
-//TODO Display Options
+<div class="row-fluid">
+    <?php if($rent_to_own['platinum'] > 0):
+    $image_properties = array(
+        'src' => 'assets/images/platinum.gif',
+        'alt' => 'platinum'
+    );
+    ?>
+        <div class="span3"><a href="<?php echo site_url('rental_applications/band/page/4/?level=platinum');?>"><?php echo img($image_properties);?></a></div>
+        <div class="span3"><p class="well-small">Platinum Plan: <br/> New Instruments</p></div>
+    <?endif;?>
+</div>
+<div class="row-fluid">
+        <?php if($rent_to_own['gold'] > 0):
+    $image_properties = array(
+        'src' => 'assets/images/gold.gif',
+        'alt' => 'gold'
+    );
+    ?>
+        <div class="span3"><a href="<?php echo site_url('rental_applications/band/page/4/?level=gold');?>"><?php echo img($image_properties);?></a></div>
+        <div class="span3"><p class="well-small">Gold Plan: <br/> Like New or New Instruments</p></div>
+        <?endif;?>
+    </div>
+    <div class="row-fluid">
+        <?php if($rent_to_own['silver'] > 0):
+        $image_properties = array(
+            'src' => 'assets/images/silver.gif',
+            'alt' => 'silver'
+        );
+        ?>
+        <div class="span3"><a href="<?php echo site_url('rental_applications/band/page/4/?level=silver');?>"><?php echo img($image_properties);?></a></div>
+        <div class="span3"><p class="well-small">Silver Plan: <br/>Rental Return Instruments</p></div>
+        <?endif;?>
+    </div>
+    <div class="row-fluid">
+        <?php if($rent_to_own['bronze'] > 0):
+        $image_properties = array(
+            'src' => 'assets/images/bronze.gif',
+            'alt' => 'bronze'
+        );
+        ?>
+        <div class="span3"><a href="<?php echo site_url('rental_applications/band/page/4/?level=bronze');?>"><?php echo img($image_properties);?></a></div>
+        <div class="span3"><p class="well-small">Bronze Plan: <br/>Rental Return Instruments</p></div>
+        <?endif;?>
+    </div>
 
 <?php endif; ?>
 

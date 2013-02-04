@@ -178,7 +178,32 @@ class Rental_applications extends Front_Controller
         Template::set('rental_plan',$rental_details);
         //Template::set('rental_plan',$prices);
 
-        $due_date = date('m/d/Y',mktime(0,0,0,date("n")+2,date("j")+10));
+
+        // installment due dates
+// 1. if it is the 5th or the 20th of the month, simply add 2 months.
+// 2. if the day of the month is less than 20, then move to the 20th of the month and add 2 months.
+// 3. if the day of the month is greater than 20, move to the 5th of next month and add 2 months.
+
+        $month=date("m");
+        $day=date("d");
+        $year=date("Y");
+
+        if ($day=="05" or $day=="20") {
+//move ahead 2 months from today
+            $due_date=date('m/d/Y', strtotime("$month/$day/$year + 2 months"));
+        }
+
+        elseif ($day>20) {
+//move to the 5th of next month and add 2 months
+            $due_date=date('m/d/Y', strtotime("$month/5/$year + 1 month"));
+            $due_date=date('m/d/Y', strtotime("$nextpayment + 2 months"));
+        }
+
+        elseif ($day<20) {
+//move to the 20th of the month and add 2 months
+            $due_date=date('m/d/Y', strtotime("$month/20/$year + 2 months"));
+        }
+
         Template::set('due_date',$due_date);
 
 

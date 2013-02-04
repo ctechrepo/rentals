@@ -151,47 +151,104 @@
     contract or purchase agreement.</p>
 
     <div class="totalbox">
-        <h4>Summary</h4>
-        <p>Total Due Now: <?php //echo $total_due;?></p>
-        <hr>
-        <p>First 2 Months Rental: $<?php echo $two_months_rental;?></p>
-        <hr>
-        <p>Monthly Total: $<?php echo number_format($monthly_rental + $m_r_price,2);?> Due <?php echo $due_date;?></p>
-        <hr>
+        <h4>Summary</h4><p></p>
+        <div class="row-fluid">
+            <div class="span2">Total Due Now: </div>
+            <div class="span2"><div class="pull-right">$<?php echo number_format($total_due,2);?></div></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span4"><hr></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2">First 2 Months Rental: </div>
+            <div class="span2"><div class="pull-right">$<?php echo $two_months_rental;?></div></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span4"><hr></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2">Monthly Total: <br/><em>Due <?php echo $due_date;?></em></div>
+            <div class="span2"><div class="pull-right">$<?php echo number_format($monthly_rental + $m_r_price,2);?></div></div>
+        </div>
     </div>
+    <p></p>
 
     <div class="pricebox">
-        <h4>Detailed Rental Fees</h4>
+        <h4>Detailed Rental Fees</h4><p></p>
         <div class="subbox">
-            <p>Accessories Subtotal</p><hr/>
 
-            <p>Accessories Tax //TODO</p><hr/>
-
-            <p>Accessories Total//TODO</p><hr/>
-
-            <p>2 Months Rental Fee: $<?php echo $two_months_rental;?></p><hr/>
-
-            <p>2 Months Maintenance and Replacement Fee: $<?php echo number_format(2*$m_r_price,2);?></p><hr/>
-
-            <div class="grandtotal"><p>Total Due Now//TODO</p></div>
+            <div class="row-fluid">
+                <div class="span2">Accessories Subtotal: </div>
+                <div class="span2"><div class="pull-right">$<?php echo $subtotal_accessories;?></div></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span4"><hr></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span2">Accessories Tax: </div>
+                <div class="span2"><div class="pull-right">$<?php echo $tax_accessories;?></div></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span4"><hr></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span2">Accessories Total:</div>
+                <div class="span2"><div class="pull-right"> $<?php echo number_format($subtotal_accessories+$tax_accessories,2)?></div></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span4"><hr></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span2">2 Months Rental Fee: </div>
+                <div class="span2"><div class="pull-right">$<?php echo $two_months_rental;?></div></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span4"><hr></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span2">2 Months Maintenance and Replacement Fee: </div>
+                <div class="span2"><div class="pull-right">$<?php echo number_format(2*$m_r_price,2);?></div></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span4"><hr></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span2">Total Due Now: </div>
+                <div class="span2"><div class="pull-right"> $<?php echo number_format($total_due,2);?></div></div>
+            </div>
 
         </div>
 
+        <br/><br/><br/>
         <div class="subbox">
-           <p>Monthly Rental Fee: $<?php echo $monthly_rental;?></p><hr/>
-
-           <p>Monthly Maintenance and Replacement: $<?php echo $m_r_price;?></p><hr/>
-
-           <div class="grandtotal">
-           <p>Total Monthly Fee: $<?php echo number_format($monthly_rental + $m_r_price,2);?></p><hr/>
-           <p> First Installment Due: <?php echo $due_date;?></p>
-           </div>
+            <div class="row-fluid">
+                <div class="span2">Monthly Rental Fee:</div>
+                <div class="span2"><div class="pull-right"> $<?php echo $monthly_rental;?></div></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span4"><hr></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span2">Monthly Maintenance and Replacement:  </div>
+                <div class="span2"><div class="pull-right">$<?php echo $m_r_price;?></div></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span4"><hr></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span2">Total Monthly Fee:</div>
+                <div class="span2"><div class="pull-right"> $<?php echo number_format($monthly_rental + $m_r_price,2);?></div></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span4"><hr></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span2">First Installment Due: </div>
+                <div class="span2"><div class="pull-right">  <?php echo $due_date;?></div></div>
+            </div>
         </div>
-
-
 
     </div>
-
 
     <?php endif; ?>
 

@@ -132,13 +132,30 @@ class product_model extends MY_Model{
         $this->db->join($a_table,"{$a_table}.product_id = {$p_table}.product_id");
         $this->db->join("{$p_table} AS aces","aces.product_id = {$a_table}.accessory_id");
         $this->db->where("{$p_table}.product_id",$product_id);
-        $query = $this->db->get("{$p_table}");
+        $query = $this->db->get($p_table);
 
         if ($query->num_rows() > 0)
         {
             return $query->result();
         }
 
+        return array();
+    }
+
+    public function getList($product_ids)
+    {
+        $p_table = $this->db->dbprefix($this->table);
+
+        foreach ($product_ids as $id)
+        {
+           $this->db->or_where('product_id',$id);
+        }
+           $query = $this->db->get($p_table);
+
+        if ($query->num_rows() > 0)
+        {
+            return $query->result();
+        }
         return array();
     }
     /**

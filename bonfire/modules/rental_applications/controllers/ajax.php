@@ -74,14 +74,17 @@ class Ajax extends Front_Controller
            $accessories = $this->input->post('accessories');
 
            if ($accessories !== FALSE){
-               $this->session->set_userdata('accessories',$accessories);
+               $this->load->model('product_model');
+               $list_accessories = $this->product_model->getList($accessories);
+
+               $this->session->set_userdata('accessories',$list_accessories);
            } elseif ($page_from == 5) {
                $this->session->unset_userdata('accessories');
            }
 
        }
        $this->response['accessories_post'] = $accessories;
-       $this->response['accessories_save'] = $this->session->userdata('accessories');
+       $this->response['accessories_save'] = json_encode($this->session->userdata('accessories'));
        echo json_encode($this->response);
     }
 }

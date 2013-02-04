@@ -58,6 +58,8 @@ class Rental_applications extends Front_Controller
      */
     public function band(){
 
+        //input
+
         $page = $this->uri->segment(4)?$this->uri->segment(4):1; //check_uri for current_page
         $skip_page3 = TRUE;
 
@@ -70,7 +72,18 @@ class Rental_applications extends Front_Controller
         $rental_details = ' ';
 
         //set session variables
-        $this->set_userdata('instrument_id',$instrument_id);
+        $this->session->set_userdata('instrument_id',$instrument_id);
+
+        //calculate accessories cost
+        $subtotal_accessories = 0;
+        $tax_accessories = 0;
+        if ($accessories = $this->session->userdata('accessories'))
+        {
+            $subtotal_accessories = $this->cost($accessories);
+            $tax_accessories = $subtotal_accessories * ($this->sales_tax/100);
+        }
+        Template::set('subtotal_accessories',number_format($subtotal_accessories,2));
+        Template::set('tax_accessories',number_format($tax_accessories,2));
 
         if (!empty($instrument_id)){
             $instrument = $this->get_instrument($instrument_id);
@@ -95,7 +108,8 @@ class Rental_applications extends Front_Controller
                  return NULL;
             },$rent_to_own);
 
-            Template::set('m_r_price',number_format($rental_details->maintenance_price + $rental_details->replacement_price,2));
+            $m_r_price = $rental_details->maintenance_price + $rental_details->replacement_price;
+            Template::set('m_r_price',number_format($m_r_price,2));
 
 
             $monthly_rental = $skip_page3?$rental_details->rent_only_price:'';
@@ -109,8 +123,10 @@ class Rental_applications extends Front_Controller
             Template::set('schools',$schools);
 
 
+            $total_due = $subtotal_accessories + $tax_accessories + $rental_details->two_month_price + (2*$m_r_price);
 
             Template::set('two_months_rental',number_format($rental_details->two_month_price,2));
+            Template::set('total_due',number_format($total_due,2));
         }
 
         Template::set('rental_plan',$rental_details);
@@ -180,8 +196,7 @@ class Rental_applications extends Front_Controller
         Template::set('terms_information',$terms_information);
         Template::set('m_r_information',$m_r_information);
 
-
-        switch($page)
+      switch($page)
         {
             case 1:  //instrument selection
                 Template::set('instruments',$this->get_rental_products('Band'));
@@ -709,8 +724,20 @@ class Rental_applications extends Front_Controller
         return $this->rentalform->getForms(1);
     }
 
+    private function cost($products)
+    {
+        $sub_total = 0;
+        foreach($products as $item)
+        {
+            $sub_total += $item->product_price;
+        }
+        return $sub_total;
+    }
+
 
 }
+
+
 
 
 class Thumbnail

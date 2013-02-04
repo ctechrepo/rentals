@@ -1,4 +1,4 @@
-<section id="rental_application" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<section id="rental_application">
     <div class="row-fluid">
         <!--controls-->
         <?php if ($page >=4): ?>
@@ -232,6 +232,31 @@
     <div class="pricebox">
         <h4>Detailed Rental Fees</h4><p></p>
         <div class="subbox">
+            <!--extra fields for rent-to-own-->
+            <?php if(! empty($r_own_selected) && $r_own_selected === TRUE): ?>
+            <div class="row-fluid">
+                <div class="span2">Instrument Price: </div>
+                <div class="span2"><div class="pull-right">$<?php echo $price_instrument;?></div></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span2">Instrument Tax: </div>
+                <div class="span2"><div class="pull-right">$<?php echo $tax_instrument;?></div></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span2">Instrument Total Cost: </div>
+                <div class="span2"><div class="pull-right">$<?php echo $cost_instrument;?></div></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span2">Instrument Service Charge: </div>
+                <div class="span2"><div class="pull-right">$<?php echo $service_charge;?></div></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span2">Total of Payments: </div>
+                <div class="span2"><div class="pull-right">$<?php echo $total_payments?></div></div>
+            </div>
+
+            <?php endif; ?>
+            <!-------------------------------->
 
             <div class="row-fluid">
                 <div class="span2">Accessories Subtotal: </div>
@@ -298,6 +323,22 @@
             <div class="row-fluid">
                 <div class="span4"><hr></div>
             </div>
+            <!--extra fields for rent-to-own-->
+            <?php if(! empty($r_own_selected) && $r_own_selected === TRUE): ?>
+            <div class="row-fluid">
+                <div class="span2">Number of Monthly Payments: </div>
+                <div class="span2"><div class="pull-right"><?php echo $installments;?></div></div>
+            </div>
+            <div class="row-fluid">
+                <div class="span2">Final Payment: </div>
+                <div class="span2"><div class="pull-right">$<?php echo $final_payment;?></div></div>
+            </div>
+
+            <?php endif; ?>
+            <!-------------------------------->
+
+
+
             <div class="row-fluid">
                 <div class="span2">First Installment Due: </div>
                 <div class="span2"><div class="pull-right">  <?php echo $due_date;?></div></div>

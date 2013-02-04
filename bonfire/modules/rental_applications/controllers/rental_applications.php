@@ -58,6 +58,10 @@ class Rental_applications extends Front_Controller
      */
     public function band(){
 
+        //TODO page 1 reset
+
+
+
         //input
 
         $page = $this->uri->segment(4)?$this->uri->segment(4):1; //check_uri for current_page
@@ -67,12 +71,15 @@ class Rental_applications extends Front_Controller
         Template::set('resource','band');
 
         $input = $this->input->get('instrument'); //get variable instrument
-        $instrument_id = empty($input)?$this->get_userdata('instrument_id'):$input;
+        $instrument_id = empty($input)?$this->session->userdata('instrument_id'):$input;
+
+        $level = $this->input->get('level')?$this->input->get('level'):$this->session->userdata('level');
 
         $rental_details = ' ';
 
         //set session variables
         $this->session->set_userdata('instrument_id',$instrument_id);
+        $this->session->set_userdata('level',$level);
 
         //calculate accessories cost
         $subtotal_accessories = 0;
@@ -113,15 +120,39 @@ class Rental_applications extends Front_Controller
             $m_r_price = $rental_details->maintenance_price + $rental_details->replacement_price;
             Template::set('m_r_price',number_format($m_r_price,2));
 
+            $monthly_rental = $rental_details->rent_only_price;
+            $levels = array_keys($rent_to_own);
+            if (in_array($level,$levels))
+            {
+               $detailsArray = (array) $rental_details;
 
-            //TODO FIX Rental Price
-            $monthly_rental = $skip_page3?$rental_details->rent_only_price:0;
+               $monthly_rental = $rent_to_own[$level];
+               $price_instrument = $detailsArray['purchase_price_'.$level];
+               Template::set('price_instrument',number_format($price_instrument,2));
+               $tax_instrument = $price_instrument * ($this->sales_tax/100);
+               Template::set('tax_instrument',number_format($tax_instrument,2));
+               $service_charge = $detailsArray['service_charge_'.$level];
+               Template::set('service_charge',$service_charge);
+
+               Template::set('cost_instrument',number_format($price_instrument+$tax_instrument,2));
+               Template::set('total_payments',number_format($price_instrument+$tax_instrument+$service_charge,2));
+
+               Template::set('installments',$rental_details->installments);
+
+               $final_payment = ($price_instrument+$tax_instrument+$service_charge) - ($monthly_rental*$rental_details->installments) - $rental_details->two_month_price + $m_r_price;
+               if ($final_payment < 0){$final_payment = 0;}
+               Template::set('final_payment',number_format($final_payment,2));
+
+               Template::set('r_own_selected',TRUE);
+            }
             Template::set('monthly_rental',number_format($monthly_rental,2));
+
 
             if ($skip_page3 === FALSE)
             {
                 Template::set('rent_own_url',site_url('rental_applications/band/page/3'));
                 Template::set('rent_to_own', $rent_to_own);
+
             }
 
             if ($rental_details->rent_only_price > 0)

@@ -58,7 +58,7 @@ baseUrl = "//localhost:8888/rentals/rental_applications/";
        data: params,
        success: function(data){
            console.log(data);
-           window.location = baseUrl+resource+'/page/'+to;
+           //window.location = baseUrl+resource+'/page/'+to;
        },
        dataType: 'json'
    })

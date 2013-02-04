@@ -351,7 +351,8 @@
 
     <?php if ($page==7):?>
     <h3><?php echo $general_information[0]->formsection_name;?></h3>
-
+    <form method="POST" action="#" class="pageData">
+        <input type="hidden" name="formSection" value="renter"/>
         <?php $count = 0; ?>
         <div class="span3">
         <?php foreach($general_information[1] as $item ):?>
@@ -366,11 +367,12 @@
             <?php $count++;?>
         <?php endforeach;?>
         </div>
+    </form>
     <?php endif;?>
 
     <?php if ($page==8):?>
-
-
+    <form method="POST" action="#" class="pageData">
+        <input type="hidden" name="formSection" value="references"/>
     <h3><?php echo $employer_information[0]->formsection_name;?></h3>
 
         <?php $count = 0; ?>
@@ -424,11 +426,13 @@
         </div>
 
 
-
+    </form>
     <?php endif;//end of page 8?>
 
 
     <?php if ($page==9):?>
+        <form method="POST" action="#" class="pageData">
+        <input type="hidden" name="formSection" value="payment"/>
         <h3><?php echo $payment_information[0]->formsection_name;?></h3>
 
         <?php $count = 0; ?>
@@ -445,6 +449,7 @@
             <?php $count++;?>
             <?php endforeach;?>
         </div>
+        </form>
     <?php endif;?>
 
     <?php if ($page==10):?>

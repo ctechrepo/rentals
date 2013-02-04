@@ -805,7 +805,12 @@ class Rental_applications extends Front_Controller
         return $sub_total;
     }
 
+    public function ajax_test()
+    {
+        echo "<form id='test' method='POST'>
 
+        </form>";
+    }
 }
 
 

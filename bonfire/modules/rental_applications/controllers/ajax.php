@@ -23,6 +23,11 @@ class Ajax extends Front_Controller
        /* if (!$this->input->is_ajax_request()) {
             exit('No direct script access allowed');
         }*/
+        $this->load->helper(array('form', 'url'));
+
+        $this->load->library('form_validation');
+        $this->form_validation->CI =& $this; //HMVC HACK for form callbacks to function right.
+
     }
 
     /**
@@ -68,6 +73,7 @@ class Ajax extends Front_Controller
        $resource = $this->input->post('resource');
        $page_from = $this->input->post('pageFrom');
        $page_to = $this->input->post('pageTo');
+       $form_section = $this->input->post('formSection');
 
        if ($resource === 'band' || $resource === 'orchestra')
        {
@@ -83,8 +89,106 @@ class Ajax extends Front_Controller
            }
 
        }
-       $this->response['accessories_post'] = $accessories;
-       $this->response['accessories_save'] = json_encode($this->session->userdata('accessories'));
+
+       //Proccess the Form on a given Page
+      switch ($form_section){
+         case "renter":
+           $this->general_information($resource);
+           break;
+
+         case "references":
+             $this->references($resource);
+              break;
+
+         case "payment":
+             $this->payment($resource);
+             break;
+       }
+       $this->response['form_section'] = $form_section;
        echo json_encode($this->response);
     }
+
+    public function test(){
+        $this->general_information('band');
+        echo "<form action='#' method='POST'>
+              <input type='hidden' name='ci_csrf_token' value='{$_COOKIE['ci_csrf_token']}'/>
+              <input type='text' name='test' />
+              <input type='submit' value='submit'/>
+        </from>";
+        var_dump($this->response);
+        die();
+    }
+
+    //--------------------helper methods-------------------------------------
+    private function general_information($resource)
+    {
+        $section = $this->get_forms($resource,'General Information');
+        $fields = $section[0][1][1];
+
+        $this->set_rules($fields);
+
+        //$this->set_message();
+
+        //todo set values
+    }
+
+    private function references($resource)
+    {
+        $section = $this->get_forms($resource,'Employer Information');
+        $fields = $section[0][1][1];
+
+        $this->set_rules($fields);
+
+        $this->set_message();
+
+        $fields_two = get_forms($resource,"Spouse's Information");
+
+        $fields_three = get_forms($resource,"Reference's Information");
+    }
+
+    private function payment($resource)
+    {
+        $section = $this->get_forms($resource,'Payment');
+        $fields = $section[0][1][1];
+
+        $this->set_rules($fields);
+
+        $this->set_message();
+
+        //todo set values
+    }
+
+    private function set_rules(& $fields)
+    {
+        foreach($fields  as $field)
+        {
+
+            $name  = $field->formfield_name;
+            $label = $field->formfield_label;
+            $rules = $field->formfield_validation_rules;
+
+            $this->form_validation->set_rules($name,$label,$rules);
+        }
+    }
+
+    private function set_message()
+    {
+        if ($this->form_validation->run($this) == FALSE)
+        {
+            //todo more detail error message
+            $this->response['ERROR'] = 'Failed Validation';
+        }
+    }
+
+    private function get_forms($resource,$section)
+    {
+        //TODO fix plan id
+
+        $this->load->model('rentalplan_to_form_model','rentalform');
+
+        //TODO add cache control statement
+
+        return $this->rentalform->getForms(1,$section);
+    }
+    //-----------------------------------------------------------------------
 }

@@ -24,7 +24,7 @@ class rentalplan_to_form_model extends MY_Model{
         $this->crud->set_table($this->db->dbprefix($this->table));
     }
 
-    public function getForms($rental_plan_id){
+    public function getForms($rental_plan_id,$section = NULL){
         $found = $this->find_all_by('rentalplan_id',$rental_plan_id);
 
         $forms = array();
@@ -41,6 +41,11 @@ class rentalplan_to_form_model extends MY_Model{
             $field = $this->db->dbprefix('formfield');
 
             $this->db->join($section_to,"{$section_to}.formsection_id = {$formsection}.formsection_id ",'left');
+
+            if ($section != NULL)
+            {
+                $this->db->where('formsection_name',$section);
+            }
 
             $this->db->where('form_id',$item->form_id);
             $this->db->order_by("formsection_order","asc");

@@ -127,9 +127,7 @@ class Ajax extends Front_Controller
 
         $this->set_rules($fields);
 
-        //$this->set_message();
-
-        //todo set values
+        $this->set_message($fields);
     }
 
     private function references($resource)
@@ -153,9 +151,7 @@ class Ajax extends Front_Controller
 
         $this->set_rules($fields);
 
-        $this->set_message();
-
-        //todo set values
+        $this->set_message($fields);
     }
 
     private function set_rules(& $fields)
@@ -171,12 +167,22 @@ class Ajax extends Front_Controller
         }
     }
 
-    private function set_message()
+    private function set_message(& $fields)
     {
-        if ($this->form_validation->run($this) == FALSE)
+       if ($this->form_validation->run($this) == FALSE)
         {
+            $this->response['error'] = 'Failed Validation.';
+            $form_errors = array();
+            $form_values = array();
             //todo more detail error message
-            $this->response['ERROR'] = 'Failed Validation';
+            foreach($fields  as $field)
+            {
+               $name = $field->formfield_name;
+               $form_errors[$name] = form_error($name);
+               $form_values[$name] = set_value($name);
+            }
+            $this->response['formErrors'] = $form_errors;
+            $this->response['formValues'] = $form_values;
         }
     }
 

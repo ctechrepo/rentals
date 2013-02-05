@@ -58,7 +58,37 @@ baseUrl = "//localhost:8888/rentals/rental_applications/";
        data: params,
        success: function(data){
            console.log(data);
-           //window.location = baseUrl+resource+'/page/'+to;
+
+           //remove previous validation
+           $('.control-group').removeClass('error');
+           $('.help-inline').html('');
+           $('.message').html('');
+           //---------------------------
+
+           switch (data.error)
+           {
+               case 'none':
+                   window.location = baseUrl+resource+'/page/'+to;
+                   break;
+
+               case 'Failed Validation':
+                   console.log('validation check.');
+                   $('.message').html(
+                       '<div class="alert">' +
+                           '<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+                           '<strong>Please Correct.</strong> The information you submitted contains errors.'+
+                      '</div>'
+                   );
+                   for (index in data.formErrors)
+                   {
+                       //add error and message to Twitter Bootstrap control group.
+                       $("#"+index+"Group").toggleClass('error');
+                        console.log("#"+index+"Error");
+                       $("#"+index+"Group").find('.help-inline').html(data.formErrors[index]);
+                   }
+                   break;
+           }
+
        },
        dataType: 'json'
    })

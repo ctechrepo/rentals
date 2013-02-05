@@ -171,14 +171,16 @@ class Ajax extends Front_Controller
     {
        if ($this->form_validation->run($this) == FALSE)
         {
-            $this->response['error'] = 'Failed Validation.';
+            $this->response['error'] = 'Failed Validation';
             $form_errors = array();
             $form_values = array();
             //todo more detail error message
             foreach($fields  as $field)
             {
                $name = $field->formfield_name;
-               $form_errors[$name] = form_error($name);
+               if (strlen(form_error($name)) > 0){
+                    $form_errors[$name] = form_error($name);
+                }
                $form_values[$name] = set_value($name);
             }
             $this->response['formErrors'] = $form_errors;

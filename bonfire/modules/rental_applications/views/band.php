@@ -1,10 +1,17 @@
 <section id="rental_application">
     <div class="row-fluid">
-        <!--controls-->
-        <?php if ($page >=4): ?>
-        <div class="pull-right"><button class="btn btn-prev">Prev</button><button class="btn btn-success btn-next">Next</button></div>
-        <?php endif; ?>
+
         <!--crumbtrail-->
+
+        <div class="span8">
+            <div class="message"><!--display a dynamic message to user with JS--></div>
+        </div>
+        <div class="span2 offset1">
+        <!--controls-->
+            <?php if ($page >=4): ?>
+            <div class="pull-right"><button class="btn btn-prev">Prev</button><button class="btn btn-success btn-next">Next</button></div>
+            <?php endif; ?>
+        </div>
     </div>
 <div class="row-fluid well-large">
 <?php if ($page==1):?>
@@ -361,8 +368,13 @@
                  </div><div class="span3">
             <?php endif;?>
 
-            <label><?php echo $item->formfield_label;?></label>
-            <input type="text" name="<?php echo $item->formfield_name;?>" class="" />
+            <div id="<?php echo $item->formfield_name;?>Group" class="control-group">
+                <label class="control-label"><?php echo $item->formfield_label;?></label>
+                <div class="controls">
+                    <input type="text" name="<?php echo $item->formfield_name;?>" class="" />
+                    <p><span class="help-inline"></span></p>
+                </div>
+            </div>
 
             <?php $count++;?>
         <?php endforeach;?>

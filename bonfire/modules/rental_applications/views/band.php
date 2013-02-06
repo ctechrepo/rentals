@@ -1,3 +1,5 @@
+<?php if ($skip_page3 && $page==3){ $page = 4;}?>
+
 <section id="rental_application">
     <div class="row-fluid">
 

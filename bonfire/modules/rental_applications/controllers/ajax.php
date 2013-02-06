@@ -68,7 +68,7 @@ class Ajax extends Front_Controller
      * @RESPONSE - json
      */
     public function page(){
-       $this->response['error'] = 'testing';
+       $this->response['error'] = 'none';
        $this->response['formErrors'] = array();
        $this->response['formValues'] = array();
 
@@ -156,7 +156,7 @@ class Ajax extends Front_Controller
             $this->response['error'] = 'Failed Validation';
             $form_errors = array();
             $form_values = array();
-            //todo more detail error message
+
             foreach($fields  as $field)
             {
                $name = $field->formfield_name;
@@ -168,6 +168,18 @@ class Ajax extends Front_Controller
             $this->response['formErrors'] = array_merge($this->response['formErrors'],$form_errors);
             $this->response['formValues'] = array_merge($this->response['formValues'],$form_values);
         }
+       else
+       {
+           //save the data
+           foreach($fields  as $field)
+           {
+               $name = $field->formfield_name;
+               $val =  set_value($name);
+               //@TODO encrypt sensitive data before saving.
+
+               $this->session->set_userdata('field_'.$name,$val);
+           }
+       }
     }
 
     /**

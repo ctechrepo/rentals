@@ -62,7 +62,7 @@ class Rental_applications extends Front_Controller
         Template::set('skip_page3',FALSE);
         //input
         $curr_page = $page = $this->uri->segment(4)?$this->uri->segment(4):1; //check_uri for current_page
-        /*
+
         if($curr_page == 1){
             //reset save data
             $this->session->unset_userdata('instrument_id');
@@ -71,7 +71,7 @@ class Rental_applications extends Front_Controller
             $this->session->unset_userdata('accessories');
             //form data is still save
         }
-        */
+
 
         $instrument_id = $this->input->get('instrument')?
                         $this->input->get('instrument'):$this->session->userdata('instrument_id');
@@ -95,7 +95,7 @@ class Rental_applications extends Front_Controller
         if (empty($instrument_id) && $curr_page != 1){
                 redirect('/rental_applications/band/page/1');
                 exit;
-        } elseif ($curr_page != 1) {
+        } elseif ($curr_page != 1) { //get information related to the selected instrument.
             $instrument = $this->get_instrument($instrument_id);
             Template::set('selected_instrument', $instrument);
             $rental_details = $this->get_rental_details($instrument_id,'band');
@@ -136,6 +136,9 @@ class Rental_applications extends Front_Controller
             case 8: $this->rental_form('band');
             break;
             case 9: $this->rental_form('band');
+            break;
+
+            case 10: $this->rental_form('band');
             break;
 
             case 11: $this->receipt();

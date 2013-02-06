@@ -68,12 +68,15 @@ class Ajax extends Front_Controller
      * @RESPONSE - json
      */
     public function page(){
-       $this->response['error'] = 'none';
+       $this->response['error'] = 'testing';
+       $this->response['formErrors'] = array();
+       $this->response['formValues'] = array();
 
        $resource = $this->input->post('resource');
        $page_from = $this->input->post('pageFrom');
        $page_to = $this->input->post('pageTo');
        $form_section = $this->input->post('formSection');
+
 
        if ($resource === 'band' || $resource === 'orchestra')
        {
@@ -90,21 +93,12 @@ class Ajax extends Front_Controller
 
        }
 
-       //Proccess the Form on a given Page
-      switch ($form_section){
-         case "renter":
-           $this->general_information($resource);
-           break;
+      if ($form_section){
+        $this->validate_section($resource,$form_section);
+      }
 
-         case "references":
-             $this->references($resource);
-              break;
 
-         case "payment":
-             $this->payment($resource);
-             break;
-       }
-       $this->response['form_section'] = $form_section;
+      $this->response['form_section'] = $form_section;
        echo json_encode($this->response);
     }
 
@@ -120,39 +114,27 @@ class Ajax extends Front_Controller
     }
 
     //--------------------helper methods-------------------------------------
-    private function general_information($resource)
+    private function validate_section($resource,$form_section)
     {
-        $section = $this->get_forms($resource,'General Information');
+        $sec_names = explode(",", $form_section);
+
+        foreach ($sec_names as $name){
+
+        $section = $section = $this->get_forms($resource,$name);
         $fields = $section['1']['0']['fields'];
+            if(empty($fields))
+            {
+                //check to see if the user is bypassing validation by modifying the section name in the html
+                $this->response['ERROR'] = 'Failed Validation';
+                exit;
+            }
 
         $this->set_rules($fields);
 
         $this->set_message($fields);
+        }
     }
 
-    private function references($resource)
-    {
-        $section = $this->get_forms($resource,'Employer Information');
-        $fields = $section['1']['0']['fields'];
-
-        $this->set_rules($fields);
-
-        $this->set_message($fields);
-
-        //$fields_two = get_forms($resource,"Spouse's Information");
-
-        //$fields_three = get_forms($resource,"Reference's Information");*/
-    }
-
-    private function payment($resource)
-    {
-        $section = $this->get_forms($resource,'Payment Information');
-        $fields = $section['1']['0']['fields'];
-
-        $this->set_rules($fields);
-
-        $this->set_message($fields);
-    }
 
     private function set_rules(& $fields)
     {
@@ -183,8 +165,8 @@ class Ajax extends Front_Controller
                 }
                $form_values[$name] = set_value($name);
             }
-            $this->response['formErrors'] = $form_errors;
-            $this->response['formValues'] = $form_values;
+            $this->response['formErrors'] = array_merge($this->response['formErrors'],$form_errors);
+            $this->response['formValues'] = array_merge($this->response['formValues'],$form_values);
         }
     }
 

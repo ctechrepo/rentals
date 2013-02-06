@@ -361,7 +361,7 @@
     <?php if ($page==7):?>
     <h3><?php echo $general_information[0]->formsection_name;?></h3>
     <form method="POST" action="#" class="pageData">
-        <input type="hidden" name="formSection" value="renter"/>
+        <input type="hidden" name="formSection" value="<?php echo $general_information[0]->formsection_name;?>"/>
         <?php $count = 0; ?>
         <div class="span3">
         <?php foreach($general_information[1] as $item ):?>
@@ -379,10 +379,11 @@
     </form>
     <?php endif;?>
 
-    <?php if ($page==8):?>
+    <?php if ($page==8):
+        $references = "{$employer_information[0]->formsection_name},{$spouse_information[0]->formsection_name},{$reference_information[0]->formsection_name}";?>
     </div><div class="row-fluid"><!--start a new row-->
     <form method="POST" action="#" class="pageData">
-        <input type="hidden" name="formSection" value="references"/>
+        <input type="hidden" name="formSection" value="<?php echo $references;?>"/>
     <h3><?php echo $employer_information[0]->formsection_name;?></h3>
 
         <?php $count = 0; ?>
@@ -445,7 +446,7 @@
 
     <?php if ($page==9):?>
         <form method="POST" action="#" class="pageData">
-        <input type="hidden" name="formSection" value="payment"/>
+        <input type="hidden" name="formSection" value="<?php echo $payment_information[0]->formsection_name;?>"/>
         <h3><?php echo $payment_information[0]->formsection_name;?></h3>
 
         <?php $count = 0; ?>
@@ -647,10 +648,14 @@
         </p>
 
         <hr />
+            <form method="POST" action="#" class="pageData">
+            <input type="hidden" name="formSection" value="<?php echo $terms_information[0]->formsection_name;?>"/>
         <?php foreach($terms_information[1] as $item ):?>
-          <label><?php echo $item->formfield_label;?></label>
-          <input type="text" name="<?php echo $item->formfield_name;?>" class="" />
+          <div id="<?php echo $item->formfield_name;?>Group">
+                <?php echo form_input($item->formfield_name,'', $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
+            </div>
         <?php endforeach;?>
+            </form>
         </div>
 
         <?php endif;?>

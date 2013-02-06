@@ -24,6 +24,67 @@ class rentalplan_to_form_model extends MY_Model{
         $this->crud->set_table($this->db->dbprefix($this->table));
     }
 
+
+    private function form_fields($form_section)
+    {
+        $field_to = $this->db->dbprefix('formfield_to_formsection');
+        $field = $this->db->dbprefix('formfield');
+
+        $this->db->join($field_to,"{$field_to}.formfield_id = {$field}.formfield_id ",'left');
+        $this->db->where('formsection_id',$form_section->formsection_id);
+        $this->db->order_by("formfield_order","asc");
+
+        $query = $this->db->get($field);
+
+        return ($query->num_rows() > 0)?$query->result():array();
+    }
+
+    private function form_sections($form,$section)
+    {
+        $returnData = array();
+
+        $section_to = $this->db->dbprefix('form_to_formsection');
+        $formsection = $this->db->dbprefix('formsection');
+
+
+        $this->db->join($section_to,"{$section_to}.formsection_id = {$formsection}.formsection_id ",'left');
+
+        if ($section != NULL)
+        {
+            $this->db->where('formsection_name',$section);
+        }
+
+        $this->db->where('form_id',$form->form_id);
+        $this->db->order_by("formsection_order","asc");
+        $query = $this->db->get($formsection);
+
+        if ($query->num_rows()>0){
+            $sections = $query->result();
+
+            foreach ($sections as $section)
+            {
+                $fields = $this->form_fields($section);
+                $data = array('section'=>$section,'fields'=>$fields);
+                array_push($returnData,$data);
+            }
+        }
+
+        return $returnData;
+    }
+
+    public function get_forms($rental_plan_id,$section = NULL)
+    {
+        $found = $this->find_all_by('rentalplan_id',$rental_plan_id);
+
+        $forms = array();
+        foreach ($found as $item)
+        {
+            $forms[$item->form_id] = $this->form_sections($item,$section);
+        }
+
+        return $forms;
+    }
+
     public function getForms($rental_plan_id,$section = NULL){
         $found = $this->find_all_by('rentalplan_id',$rental_plan_id);
 

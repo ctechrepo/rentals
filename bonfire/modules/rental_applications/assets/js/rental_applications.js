@@ -82,7 +82,7 @@ baseUrl = "//localhost:8888/rentals/rental_applications/";
                    for (index in data.formErrors)
                    {
                        //add error and message to Twitter Bootstrap control group.
-                       $("#"+index+"Group").toggleClass('error');
+                       $("#"+index+"Group").find('.control-group').toggleClass('error');
                         console.log("#"+index+"Error");
                        $("#"+index+"Group").find('.help-inline').html(data.formErrors[index]);
                    }

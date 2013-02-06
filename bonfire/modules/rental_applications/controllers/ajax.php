@@ -123,7 +123,7 @@ class Ajax extends Front_Controller
     private function general_information($resource)
     {
         $section = $this->get_forms($resource,'General Information');
-        $fields = $section[0][1][1];
+        $fields = $section['1']['0']['fields'];
 
         $this->set_rules($fields);
 
@@ -133,21 +133,21 @@ class Ajax extends Front_Controller
     private function references($resource)
     {
         $section = $this->get_forms($resource,'Employer Information');
-        $fields = $section[0][1][1];
+        $fields = $section['1']['0']['fields'];
 
         $this->set_rules($fields);
 
-        $this->set_message();
+        $this->set_message($fields);
 
-        $fields_two = get_forms($resource,"Spouse's Information");
+        //$fields_two = get_forms($resource,"Spouse's Information");
 
-        $fields_three = get_forms($resource,"Reference's Information");
+        //$fields_three = get_forms($resource,"Reference's Information");*/
     }
 
     private function payment($resource)
     {
-        $section = $this->get_forms($resource,'Payment');
-        $fields = $section[0][1][1];
+        $section = $this->get_forms($resource,'Payment Information');
+        $fields = $section['1']['0']['fields'];
 
         $this->set_rules($fields);
 
@@ -188,6 +188,12 @@ class Ajax extends Front_Controller
         }
     }
 
+    /**
+     * @param $resource
+     * @param $section
+     * @return mixed -- array FormIds=>array Sections => array('fields'=>Object 'section'=>Object) //where fields is fields meta data
+     *  and section is section meta data.
+     */
     private function get_forms($resource,$section)
     {
         //TODO fix plan id
@@ -196,7 +202,7 @@ class Ajax extends Front_Controller
 
         //TODO add cache control statement
 
-        return $this->rentalform->getForms(1,$section);
+        return $this->rentalform->get_Forms(1,$section);
     }
     //-----------------------------------------------------------------------
 }

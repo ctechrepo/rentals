@@ -28,6 +28,7 @@ class Rental_applications extends Front_Controller
 
         $this->load->helper('html');
         $this->load->helper('file');
+        $this->load->helper('form');
 
 
         $this->load->add_package_path(APPPATH.'third_party/phpThumb/');

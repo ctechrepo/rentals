@@ -368,14 +368,9 @@
                  </div><div class="span3">
             <?php endif;?>
 
-            <div id="<?php echo $item->formfield_name;?>Group" class="control-group">
-                <label class="control-label"><?php echo $item->formfield_label;?></label>
-                <div class="controls">
-                    <input type="text" name="<?php echo $item->formfield_name;?>" class="" />
-                    <p><span class="help-inline"></span></p>
-                </div>
-            </div>
-
+        <div id="<?php echo $item->formfield_name;?>Group">
+        <?php echo form_input($item->formfield_name,'', $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
+        </div>
             <?php $count++;?>
         <?php endforeach;?>
         </div>
@@ -383,6 +378,7 @@
     <?php endif;?>
 
     <?php if ($page==8):?>
+    </div><div class="row-fluid"><!--start a new row-->
     <form method="POST" action="#" class="pageData">
         <input type="hidden" name="formSection" value="references"/>
     <h3><?php echo $employer_information[0]->formsection_name;?></h3>
@@ -392,18 +388,19 @@
         <?php foreach($employer_information[1] as $item ):?>
 
         <?php if ($count == 4 || $count == 9): //make a new column?>
-                 <!--/div><div class="span3"-->
+                 </div><div class="span3">
             <?php endif;?>
 
-        <label><?php echo $item->formfield_label;?></label>
-        <input type="text" name="<?php echo $item->formfield_name;?>" class="" />
+        <div id="<?php echo $item->formfield_name;?>Group">
+            <?php echo form_input($item->formfield_name,'', $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
+        </div>
 
         <?php $count++;?>
         <?php endforeach;?>
         </div>
 
 
-    </div><div class="row-fluid"><!--start a new row -->
+    </div><div class="row-fluid"><!--start a new row-->
     <h3><?php echo $spouse_information[0]->formsection_name;?></h3>
         <?php $count = 0; ?>
         <div class="span3">
@@ -413,14 +410,15 @@
             </div><div class="span3">
             <?php endif;?>
 
-        <label><?php echo $item->formfield_label;?></label>
-        <input type="text" name="<?php echo $item->formfield_name;?>" class="" />
+            <div id="<?php echo $item->formfield_name;?>Group">
+                <?php echo form_input($item->formfield_name,'', $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
+            </div>
 
         <?php $count++;?>
         <?php endforeach;?>
         </div>
 
-    </div><div class="row-fluid"><!--start a new row -->
+    </div><div class="row-fluid"><!--start a new row-->
         <h3><?php echo $reference_information[0]->formsection_name;?></h3>
         <?php $count = 0; ?>
         <div class="span3">
@@ -430,8 +428,9 @@
             </div><div class="span3">
             <?php endif;?>
 
-            <label><?php echo $item->formfield_label;?></label>
-            <input type="text" name="<?php echo $item->formfield_name;?>" class="" />
+            <div id="<?php echo $item->formfield_name;?>Group">
+                <?php echo form_input($item->formfield_name,'', $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
+            </div>
 
             <?php $count++;?>
             <?php endforeach;?>
@@ -455,13 +454,14 @@
                  <!--/div><div class="span3"-->
             <?php endif;?>
 
-            <label><?php echo $item->formfield_label;?></label>
-            <input type="text" name="<?php echo $item->formfield_name;?>" class="" />
+            <div id="<?php echo $item->formfield_name;?>Group">
+                <?php echo form_input($item->formfield_name,'', $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
+            </div>
 
             <?php $count++;?>
             <?php endforeach;?>
         </div>
-        </form>
+        <form>
     <?php endif;?>
 
     <?php if ($page==10):?>

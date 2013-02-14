@@ -62,6 +62,28 @@ class Ajax extends Front_Controller
     }
 
     /**
+     * Ajax receipt request.
+     *
+     * @POST - data needs to be updated
+     * @RESPONSE - json
+     */
+    public function receipt(){
+        $this->response['error'] = 'none';
+        $security = $this->input->post('security');
+        $resource = $this->input->post('resource');
+        $contractno = $this->session->userdata("contractno");
+
+        if ($this->input->post('getReceipt') === 'yes' &&
+                $security && $resource)
+        {
+
+            $this->prepare_receipt($resource,$contractno,$security);
+        }
+
+        echo json_encode($this->response);
+    }
+
+    /**
      * Ajax pagination request.
      *
      * @POST - data needs to be updated
@@ -76,6 +98,7 @@ class Ajax extends Front_Controller
        $page_from = $this->input->post('pageFrom');
        $page_to = $this->input->post('pageTo');
        $form_section = $this->input->post('formSection');
+
 
 
        if ($resource === 'band' || $resource === 'orchestra')
@@ -197,6 +220,138 @@ class Ajax extends Front_Controller
         //TODO add cache control statement
 
         return $this->rentalform->get_Forms(1,$section);
+    }
+
+    private function prepare_receipt($resource,$contractno,$level = 'unsecure')
+    {
+        switch($resource)
+        {
+            case 'band':
+                $data = $this->band_data($level);
+                $form = 'assets/pdf/contract.pdf';
+                break;
+        }
+
+        $data = array_merge($data,array("contractno"=>$contractno));
+
+        $this->response['data'] = $data;
+
+        //sorry codeIgniter but I don't want to repeat myself
+        require_once __DIR__.'/fdf_pdf.php';
+
+        $pdf = new Fdf_pdf();
+        $pdf->__init($form,$data);
+        $pdf->create($level.'_'.$contractno);
+        //$this->response['data'] = $this->session->flashdata('filled_data');
+    }
+
+
+
+    /*
+    * Contructs key-field pair for FDF data, shared data between multiple contracts
+    *
+    * @param $level - security level used to censore sensetive data when needed.
+    */
+    private function common_data($level)
+    {
+        $common_data = array(
+            "contractdate" => date('m/d/Y'),
+            "debitmonth" => $this->session->userdata("field_debitMonth"),
+
+            "instrumentname" => $this->session->userdata("field_instrumentName"),
+            "price" => $this->session->userdata('field_price'),
+            "tax" => $this->session->userdata('field_tax'),
+            "servicecharge"=> $this->session->userdata("field_serviceCharge"),
+            "totalofpayments"=> $this->session->userdata("field_totalPayments"),
+            "tax2"=> $this->session->userdata("field_tax2"),
+            "subtotal"=> $this->session->userdata("field_subtotal"),
+            "totaldue"=> $this->session->userdata("field_totalDue"),
+            "monthlymaintenancefee" => $this->session->userdata("field_mrFee"),
+            "monthlyrentalfee"=> $this->session->userdata("field_monthlyRentalFee"),
+            "totalmonthly" => $this->session->userdata("field_totalMonthly"),
+            "school" => $this->session->userdata("field_school"),
+            "deliverto" => $this->session->userdata("field_delivery"),
+            "signature" => $this->session->userdata("field_initials"),
+            "cardtype" => $this->session->userdata("field_ccType"),
+            "cardholder" => $this->session->userdata("field_ccName"),
+            "expmonth" => $this->session->userdata("field_ccExpMonth"),
+            "expyear" => $this->session->userdata("field_ccExpYear"),
+
+            "renterfirstname" => $this->session->userdata("field_rentersFirstName")." ".
+                                 $this->session->userdata("field_rentersMiddleInitial"),
+            "renterlastname" => $this->session->userdata("field_rentersLastName"),
+            "employer" => $this->session->userdata("field_employerName"),
+
+            "spousename" => $this->session->userdata("field_spouseName"),
+            "spouseemployer" => $this->session->userdata("field_spouseEmployer"),
+
+            "referencename" => $this->session->userdata("field_referenceName"),
+            "studentname" => $this->session->userdata("field_student"),
+            "signature" => $this->session->userdata("field_initials")
+        );
+
+        if ($level === 'secure')
+        {
+            $common_data['homephone'] = $this->session->userdata("field_homePhone");
+            $common_data['workphone'] = $this->session->userdata("field_workPhone");
+            $common_data['renteremail'] = $this->session->userdata("field_email");
+            $common_data['ssn'] = $this->session->userdata("field_ssn");
+            $common_data['spousessn'] = $this->session->userdata("field_spouseSSN");
+            $common_data['spouseemail'] = $this->session->userdata("field_spouseEmail");
+            $common_data['spouseemployeraddress'] = $this->session->userdata("field_spouseEmployerAddressLine1"). " ".
+                $this->session->userdata("field_spouseEmployerAddressLine2"). " ".
+                $this->session->userdata("field_spouseEmployerCity"). ", ".$this->session->userdata("field_spouseEmployerState"). " ".
+                $this->session->userdata("field_spouseEmployerZip");
+
+
+            $common_data['spouseworkphone'] = $this->session->userdata("field_spouseWorkPhone");
+            //$common_data['spouseaddress'] = "";
+            $common_data['spousedriverslicense'] = $this->session->userdata("field_spouseDriversLicense");
+
+            $common_data['referenceaddress'] = $this->session->userdata("field_referenceAddressLine1"). " ".
+                $this->session->userdata("field_referenceAddressLine2"). " ".
+                $this->session->userdata("field_referenceCity"). ", ".$this->session->userdata("field_referenceState"). " ".
+                $this->session->userdata("field_referenceZip");
+
+            $common_data['referencerelationship'] = $this->session->userdata("field_referenceRelationship");
+            $common_data['referencephone'] = $this->session->userdata("field_referencePhone");
+            $common_data['cardnumber'] = $this->session->userdata("field_ccNumber");
+            $common_data['cvc'] = $this->session->userdata("field_ccCode");
+            $common_data['driverslicense'] = $this->session->userdata("field_driversLicense");
+            $common_data['homeaddress'] = $this->session->userdata("field_homeAddressLine1")." ".
+                                          $this->session->userdata("field_homeAddressLine2");
+            $common_data['homecity'] =    $this->session->userdata("field_city");
+            $common_data['homestate'] =   $this->session->userdata("field_state");
+            $common_data['homezip'] =     $this->session->userdata("field_zip");
+            $common_data['empoyeraddress'] = $this->session->userdata("field_employerAddressLine1"). " ".
+                                             $this->session->userdata("field_employerAddressLine2"). " ".
+                $this->session->userdata("field_employerCity"). ", ".$this->session->userdata("field_employerState"). " ".
+                $this->session->userdata("field_employerZip");
+        }
+
+        return $common_data;
+    }
+
+    /*
+    * Contructs key-field pair for FDF data, related to a band contract
+    *
+    * @param $level - security level used to censore sensetive data when needed.
+    */
+    private function band_data($level)
+    {
+        $band_data = array(
+            "plan" => $this->session->userdata('level'),
+            "totalaccessories" => $this->session->userdata("field_totalAccessoires"),
+            "rentalfee2months" => $this->session->userdata("field_rentalfee2months"),
+            "maintenance2months" => $this->session->userdata("field_mr2months"),
+            "numbermonthlypayments" => $this->session->userdata("field_numberMonthlyPayments"),
+            "finalpayment" => $this->session->userdata("field_finalPayment"),
+            "cashprice" => $this->session->userdata("field_cashPrice"),
+
+            "accessories" => $this->session->userdata("field_accessoriesList")
+        );
+
+        return array_merge($this->common_data($level),$band_data);
     }
     //-----------------------------------------------------------------------
 }

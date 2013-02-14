@@ -98,4 +98,45 @@ baseUrl = "//localhost:8888/rentals/rental_applications/";
    ;
  }
 
+ if (sendReceipts == 'yes'){
+     receipts();
+ }
+
+  // receipt driver
+ function receipts()
+ {
+    createReceipt('unsecure');
+    createReceipt('secure');
+
+ }
+
+
+ function createReceipt(level){
+     //var params = 'ci_csrf_token='+csrf_token;
+     //params += '&resource='+resource;
+     //params += '&security='+level;
+     //params += '&getReceipt='+'yes';
+
+     var params = {ci_csrf_token: csrf_token,
+               resource: resource,
+               security: level,
+               getReceipt: 'yes'
+     };
+
+     $.ajax({
+         type:"POST",
+         url: ajaxController+'receipt',
+         data: params,
+         success: function(data){
+                console.log(data);
+         },
+         dataType: 'json'
+     })
+      .fail(function(){
+           console.log("Failed to create receipt.")
+         })
+     ;
+
+ }
+
 })(jQuery);

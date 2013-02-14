@@ -62,6 +62,12 @@ class Rental_applications extends Front_Controller
         Template::set('skip_page3',FALSE);
         //input
         $curr_page = $page = $this->uri->segment(4)?$this->uri->segment(4):1; //check_uri for current_page
+        $page_seen = $this->session->userdata('page_seen')?$this->session->userdata('page_seen'):array(
+            7=>FALSE,
+            8=>FALSE,
+            9=>FALSE,
+            10=>FALSE
+        );
 
         if($curr_page == 1){
             //reset save data
@@ -69,6 +75,7 @@ class Rental_applications extends Front_Controller
             $this->session->unset_userdata('level');
             $this->session->unset_userdata('optionalMandR');
             $this->session->unset_userdata('accessories');
+            $this->session->unset_userdata('page_seen');
             //form data is still save
         }
 
@@ -98,6 +105,7 @@ class Rental_applications extends Front_Controller
         } elseif ($curr_page != 1) { //get information related to the selected instrument.
             $instrument = $this->get_instrument($instrument_id);
             Template::set('selected_instrument', $instrument);
+            $this->session->set_userdata("field_instrumentName",$instrument->product_name);
             $rental_details = $this->get_rental_details($instrument_id,'band');
             $rent_only_option = $rental_details->rent_only_price > 0;
             $this->standard_rental($rental_details,$level);
@@ -132,18 +140,23 @@ class Rental_applications extends Front_Controller
                 break;
 
             case 7: $this->rental_form('band');
+                    $page_seen[7] = TRUE;
                        break;
             case 8: $this->rental_form('band');
-            break;
+                    $page_seen[8]  = TRUE;
+                    break;
             case 9: $this->rental_form('band');
-            break;
+                    $page_seen[9] = TRUE;
+                    break;
 
             case 10: $this->rental_form('band');
-            break;
+                    $page_seen[10] = TRUE;
+                    break;
 
-            case 11: $this->receipt();
+            case 11: $this->receipt($page_seen,'band');
                 break;
         }
+        $this->session->set_userdata('page_seen',$page_seen);
         //----------------------------------------------------------------------------------
 
 
@@ -723,6 +736,7 @@ class Rental_applications extends Front_Controller
         if (!empty($instrument_id)){
             $instrument = $this->get_instrument($instrument_id);
             Template::set('selected_instrument', $instrument);
+            $this->session->set_userdata("field_instrumentName",$instrument->product_name);
 
             $rental_details = $this->get_rental_details($instrument_id,'bravo');
 
@@ -913,10 +927,14 @@ class Rental_applications extends Front_Controller
     private function cost($products)
     {
         $sub_total = 0;
+        $accessories_list = "";
         foreach($products as $item)
         {
             $sub_total += $item->product_price;
+            $accessories_list .= $item->product_name.", ";
         }
+        $this->session->set_userdata("field_accessoriesList",$accessories_list);
+        $this->session->set_userdata("field_totalAccessoires",number_format($sub_total,2));
         return $sub_total;
     }
 
@@ -930,6 +948,8 @@ class Rental_applications extends Front_Controller
     private function standard_invoice($accessories,$rental_details,$level)
     {
         $m_r_price = $rental_details->maintenance_price + $rental_details->replacement_price;
+        $this->session->set_userdata("field_mrFee",number_format($m_r_price,2));
+        $this->session->set_userdata("field_mr2months",number_format($m_r_price*2,2));
 
         $rent_to_own = array(
             'bronze'=>$rental_details->bronze_price,
@@ -945,9 +965,12 @@ class Rental_applications extends Front_Controller
         {
             $subtotal_accessories = $this->cost($accessories);
             $tax_accessories = $subtotal_accessories * ($this->sales_tax/100);
+            $this->session->set_userdata("field_tax2",number_format($tax_accessories,2));
         }
         Template::set('subtotal_accessories',number_format($subtotal_accessories,2));
         Template::set('tax_accessories',number_format($tax_accessories,2));
+
+        $this->session->set_userdata('field_subtotal',number_format($subtotal_accessories+$tax_accessories,2));
 
         $monthly_rental = $rental_details->rent_only_price;
         $levels = array_keys($rent_to_own);
@@ -956,27 +979,43 @@ class Rental_applications extends Front_Controller
             $detailsArray = (array) $rental_details;
 
             $monthly_rental = $rent_to_own[$level];
+
             $price_instrument = $detailsArray['purchase_price_'.$level];
             Template::set('price_instrument',number_format($price_instrument,2));
+            $this->session->set_userdata('field_price',number_format($price_instrument,2));
+
             $tax_instrument = $price_instrument * ($this->sales_tax/100);
             Template::set('tax_instrument',number_format($tax_instrument,2));
+            $this->session->set_userdata('field_tax',number_format($tax_instrument,2));
+
+            $this->session->set_userdata('field_cashPrice',number_format($tax_instrument+$price_instrument,2));
+
             $service_charge = $detailsArray['service_charge_'.$level];
             Template::set('service_charge',$service_charge);
+            $this->session->set_userdata('field_serviceCharge',number_format($service_charge,2));
 
             Template::set('cost_instrument',number_format($price_instrument+$tax_instrument,2));
             Template::set('total_payments',number_format($price_instrument+$tax_instrument+$service_charge,2));
+            $this->session->set_userdata('field_totalPayments',number_format($price_instrument+$tax_instrument+$service_charge,2));
 
             Template::set('installments',$rental_details->installments);
+            $this->session->set_userdata("field_numberMonthlyPayments",$rental_details->installments);
 
             $final_payment = ($price_instrument+$tax_instrument+$service_charge) - ($monthly_rental*$rental_details->installments) - $rental_details->two_month_price + $m_r_price;
             if ($final_payment < 0){$final_payment = 0;}
             Template::set('final_payment',number_format($final_payment,2));
+            $this->session->set_userdata("field_finalPayment",number_format($final_payment,2));
 
             Template::set('r_own_selected',TRUE);
         }
         Template::set('monthly_rental',number_format($monthly_rental,2));
+        $this->session->set_userdata("field_monthlyRentalFee",number_format($monthly_rental,2));
 
         $total_due = $subtotal_accessories + $tax_accessories + $rental_details->two_month_price + (2*$m_r_price);
+        $this->session->set_userdata("field_totalDue",number_format($total_due,2));
+        $this->session->set_userdata("field_rentalfee2months",number_format($rental_details->two_month_price,2));
+
+        $this->session->set_userdata("field_totalMonthly",number_format($monthly_rental+$m_r_price,2));
 
         Template::set('two_months_rental',number_format($rental_details->two_month_price,2));
         Template::set('total_due',number_format($total_due,2));
@@ -1012,6 +1051,7 @@ class Rental_applications extends Front_Controller
         }
 
         Template::set('due_date',$due_date);
+        $this->session->set_userdata("field_debitMonth",$due_date);
     }
 
 
@@ -1113,8 +1153,26 @@ class Rental_applications extends Front_Controller
         Template::set('m_r_information',$m_r_information);
     }
 
-    private function receipt()
+    private function receipt($page_seen,$resource)
     {
+       foreach($page_seen as $page=>$seen)
+       {
+           if (! $seen)
+           {
+              //redirect to page that was skip.
+              redirect('rental_applications/band/page/'.$page);
+              exit;
+           }
+       }
+        $contractno = md5(time().$this->session->userdata('field_initials'));
+        $this->session->set_userdata("contractno",$contractno);
+        $this->load->model('rentalplan_to_form_model','rentalform');
+
+
+
+        $form = $this->rentalform->get_forms(1);
+
+        var_dump($form);
 
     }
 }

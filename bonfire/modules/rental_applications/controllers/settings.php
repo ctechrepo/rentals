@@ -7,6 +7,7 @@ class settings extends Admin_Controller{
     public function index(){
 
         //$this->install();
+
     }
 
     public function install(){

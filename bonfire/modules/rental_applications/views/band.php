@@ -371,7 +371,7 @@
             <?php endif;?>
 
         <div id="<?php echo $item->formfield_name;?>Group">
-        <?php echo form_input($item->formfield_name,'', $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
+        <?php echo form_input($item->formfield_name,$this->session->userdata('field_'.$item->formfield_name), $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
         </div>
             <?php $count++;?>
         <?php endforeach;?>
@@ -395,7 +395,7 @@
             <?php endif;?>
 
         <div id="<?php echo $item->formfield_name;?>Group">
-            <?php echo form_input($item->formfield_name,'', $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
+            <?php echo form_input($item->formfield_name,$this->session->userdata('field_'.$item->formfield_name), $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
         </div>
 
         <?php $count++;?>
@@ -414,7 +414,7 @@
             <?php endif;?>
 
             <div id="<?php echo $item->formfield_name;?>Group">
-                <?php echo form_input($item->formfield_name,'', $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
+                <?php echo form_input($item->formfield_name,$this->session->userdata('field_'.$item->formfield_name), $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
             </div>
 
         <?php $count++;?>
@@ -432,7 +432,7 @@
             <?php endif;?>
 
             <div id="<?php echo $item->formfield_name;?>Group">
-                <?php echo form_input($item->formfield_name,'', $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
+                <?php echo form_input($item->formfield_name,$this->session->userdata('field_'.$item->formfield_name), $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
             </div>
 
             <?php $count++;?>
@@ -458,7 +458,7 @@
             <?php endif;?>
 
             <div id="<?php echo $item->formfield_name;?>Group">
-                <?php echo form_input($item->formfield_name,'', $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
+                <?php echo form_input($item->formfield_name,$this->session->userdata('field_'.$item->formfield_name), $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
             </div>
 
             <?php $count++;?>
@@ -652,7 +652,7 @@
             <input type="hidden" name="formSection" value="<?php echo $terms_information[0]->formsection_name;?>"/>
         <?php foreach($terms_information[1] as $item ):?>
           <div id="<?php echo $item->formfield_name;?>Group">
-                <?php echo form_input($item->formfield_name,'', $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
+                <?php echo form_input($item->formfield_name,$this->session->userdata('field_'.$item->formfield_name), $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
             </div>
         <?php endforeach;?>
             </form>
@@ -662,6 +662,9 @@
 
     <?php if ($page==11):?>
         //Yay!!! finished
+        <script>
+           sendReceipts = 'yes';
+        </script>
         <?php endif;?>
 
 </div>

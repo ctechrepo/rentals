@@ -99,8 +99,6 @@ class Ajax extends Front_Controller
        $page_to = $this->input->post('pageTo');
        $form_section = $this->input->post('formSection');
 
-
-
        if ($resource === 'band' || $resource === 'orchestra')
        {
            $accessories = $this->input->post('accessories');
@@ -230,6 +228,14 @@ class Ajax extends Front_Controller
                 $data = $this->band_data($level);
                 $form = 'assets/pdf/contract.pdf';
                 break;
+            case 'orchestra':
+                $data = $this->orchestra_data($level);
+                $form = 'assets/pdf/contract.pdf';
+                break;
+            case 'bravo':
+                $data = $this->bravo_data($level);
+                $form = 'assets/pdf/contract.pdf';
+                break;
         }
 
         $data = array_merge($data,array("contractno"=>$contractno));
@@ -338,6 +344,50 @@ class Ajax extends Front_Controller
     * @param $level - security level used to censore sensetive data when needed.
     */
     private function band_data($level)
+    {
+        $band_data = array(
+            "plan" => $this->session->userdata('level'),
+            "totalaccessories" => $this->session->userdata("field_totalAccessoires"),
+            "rentalfee2months" => $this->session->userdata("field_rentalfee2months"),
+            "maintenance2months" => $this->session->userdata("field_mr2months"),
+            "numbermonthlypayments" => $this->session->userdata("field_numberMonthlyPayments"),
+            "finalpayment" => $this->session->userdata("field_finalPayment"),
+            "cashprice" => $this->session->userdata("field_cashPrice"),
+
+            "accessories" => $this->session->userdata("field_accessoriesList")
+        );
+
+        return array_merge($this->common_data($level),$band_data);
+    }
+
+    /*
+    * Contructs key-field pair for FDF data, related to a orchestra contract
+    *
+    * @param $level - security level used to censore sensetive data when needed.
+    */
+    private function orchestra_data($level)
+    {
+        $band_data = array(
+            "plan" => $this->session->userdata('level'),
+            "totalaccessories" => $this->session->userdata("field_totalAccessoires"),
+            "rentalfee2months" => $this->session->userdata("field_rentalfee2months"),
+            "maintenance2months" => $this->session->userdata("field_mr2months"),
+            "numbermonthlypayments" => $this->session->userdata("field_numberMonthlyPayments"),
+            "finalpayment" => $this->session->userdata("field_finalPayment"),
+            "cashprice" => $this->session->userdata("field_cashPrice"),
+
+            "accessories" => $this->session->userdata("field_accessoriesList")
+        );
+
+        return array_merge($this->common_data($level),$band_data);
+    }
+
+    /*
+    * Contructs key-field pair for FDF data, related to a bravo contract
+    *
+    * @param $level - security level used to censore sensetive data when needed.
+    */
+    private function bravo_data($level)
     {
         $band_data = array(
             "plan" => $this->session->userdata('level'),

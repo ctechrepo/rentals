@@ -76,26 +76,14 @@
            $uriVar1 = $this->uri->segment(5);
            $uriVar2 = $this->uri->segment(6);
 
-           //don't use get variables if view interacts with GROCERY CRUD
-           //get variables
-
-           //post variables
-
-           //cookies
-
-           //session variables
-
-           //set $output -- GROCERY_CRUD RENDER OBJECT
-           switch($uriVar1)
-           {
-
-
-               default:
-                  $this->load->model('rentalplan_application_model','applications');
-                 // $output = $this->applications->output();
-           }
            //set View variables
            Template::set('filter',$uriVar1);
+
+
+           $this->load->model('rentalplan_application_model','applications');
+
+           $output = $this->applications->output();
+
 
            //inject GROCERY_CRUD assets and view
            if (!empty($output)){
@@ -105,7 +93,8 @@
            } else {
                Template::set('CRUD_table','');
            }
-           $this->cleanup();
+
+
            Template::render();
        }
 

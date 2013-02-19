@@ -108,7 +108,7 @@ class Rental_applications extends Front_Controller
             $this->session->set_userdata("field_instrumentName",$instrument->product_name);
             $rental_details = $this->get_rental_details($instrument_id,'band');
             $rent_only_option = $rental_details->rent_only_price > 0;
-            $this->standard_rental($rental_details,$level);
+            $this->standard_rental($rental_details,$level,'band');
         }
         //make sure a valid rental option has been selected before moving on.
         if (empty($level) && ! $rent_only_option && $curr_page > 3)
@@ -241,8 +241,8 @@ class Rental_applications extends Front_Controller
 
             $rental_details = $this->get_rental_details($instrument_id,'orchestra');
             $rent_only_option = $rental_details->rent_only_price > 0;
-            $this->standard_rental($rental_details,$level);
-        }
+            $this->standard_rental($rental_details,$level,'orchestra');
+        };
         //make sure a valid rental option has been selected before moving on.
         if (empty($level) && ! $rent_only_option && $curr_page > 3)
         {
@@ -295,7 +295,7 @@ class Rental_applications extends Front_Controller
 
         //set pagination---------------------------------------------------------------------
         $this->load->library('pagination');
-        $config_pagination['base_url'] = site_url('/rental_applications/band/page/');
+        $config_pagination['base_url'] = site_url('/rental_applications/orchestra/page/');
         $config_pagination['total_rows'] = 11;
         $config_pagination['per_page'] = 1;
         $config_pagination['use_page_numbers'] = TRUE;
@@ -310,7 +310,7 @@ class Rental_applications extends Front_Controller
 
         //output
         Template::set('page',$curr_page);
-        Template::set('resource','band');
+        Template::set('resource','orchestra');
         Template::set('pagination',$this->pagination->create_links());
 
         Template::render();
@@ -715,7 +715,8 @@ class Rental_applications extends Front_Controller
 
         //TODO add cache control statement
 
-        return $this->rentalform->getForms($plan_id);
+        //return $this->rentalform->getForms($plan_id);//TODO Fix
+        return $this->rentalform->getForms(1);  //All contracts use the sameform temporary workaround
     }
 
     private function cost($products)
@@ -849,7 +850,7 @@ class Rental_applications extends Front_Controller
     }
 
 
-    private function standard_rental($rental_details)
+    private function standard_rental($rental_details,$level,$type)
     {
        Template::set('plan_description',$rental_details->rental_description);
 
@@ -874,14 +875,14 @@ class Rental_applications extends Front_Controller
        Template::set('skip_page3',$skip_page3);
        if ($skip_page3 === FALSE)
        {
-            Template::set('rent_own_url',site_url('rental_applications/band/page/3'));
+            Template::set('rent_own_url',site_url("rental_applications/$type/page/3"));
             Template::set('rent_to_own', $rent_to_own);
 
        }
 
        if ($rental_details->rent_only_price > 0)
        {
-            Template::set('rent_only_url',site_url('rental_applications/band/page/4'));
+            Template::set('rent_only_url',site_url("rental_applications/$type/page/4"));
        }
 
       $m_r_price = $rental_details->maintenance_price + $rental_details->replacement_price;

@@ -53,8 +53,11 @@ class category_model extends MY_Model
 
                $sub_result = ($sub_query->num_rows() > 0)? $sub_query->result(): array();
 
-               $temp = array($parent->category_name,$sub_result);
-               array_push($returnArray,$temp);
+               $group = new Category_node();
+               $group->parent = $parent;
+               $group->children = $sub_result;
+
+               array_push($returnArray,$group);
         }
 
         return $returnArray;
@@ -100,6 +103,13 @@ class category_model extends MY_Model
 
         return $this->crud->render();
     }
+}
+
+class Category_node{
+
+    public $parent;
+
+    public $children;
 }
 /**
  * Created by CTech.

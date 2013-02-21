@@ -66,7 +66,6 @@ class product_model extends MY_Model{
     public function rental_products($rental_plan,$group = null)
     {
 
-
         $p_table = $this->db->dbprefix($this->table);
         $r_table = $this->db->dbprefix('rental');
         $rp_table = $this->db->dbprefix('rentalplan');
@@ -88,7 +87,6 @@ class product_model extends MY_Model{
         {
             return $query->result();
         }
-
         return array();
     }
 

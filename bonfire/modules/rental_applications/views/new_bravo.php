@@ -1,48 +1,71 @@
-<section id="rental_application" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
-<div class="row-fluid">
-    <!--controls-->
-    <!--crumbtrail-->
-</div>
+<section id="rental_application">
 <div class="row-fluid">
 
+    <!--crumbtrail-->
+
+    <div class="span8">
+        <div class="message"><!--display a dynamic message to user with JS--></div>
+    </div>
+    <div class="span2 offset1">
+        <!--controls-->
+        <?php if ($page >=4): ?>
+        <div class="pull-right"><button class="btn btn-prev">Prev</button><button class="btn btn-success btn-next">Next</button></div>
+        <?php endif; ?>
+    </div>
+</div>
+<div class="row-fluid well-large">
+
+
 <?php if ($page==1):?>
-    <h3>Select Instrument</h3>
-    //TODO Load Instrument Pictures
+<h3>Choose A Category</h3>
     <?php //var_dump($instruments); ?>
-    <?php foreach($instruments as $instrument):?>
-        <a href="<?php echo $instrument_url. 'instrument=' .$instrument->product_id;?>" class="instrument_link">
-            <!---img-->
-            <p><?php echo $instrument->product_photo_url;?></p>
+<div class="span11 offset1">
+    <?php foreach($groups as $group):
+            foreach($group->children as $cat):
+    ?>
+
+    <div class="pull-left well-small" >
+        <a href="<?php echo $group_url. 'group=' .$cat->category_id;?>" class="instrument_link">
             <!---description--->
-            <p><?php echo $instrument->product_name;?></p>
+            <h4 style="width:150px; text-align: center; height: 3em;"><?php echo $cat->category_name;?></h4>
+            <!---img-->
+
         </a>
-        <?php endforeach;?>
-    <?php endif; ?>
+    </div>
+    <?php endforeach; endforeach;?>
+    <div class="clearfix"></div>
+</div>
+<?php endif; ?>
 
 
 <?php if ($page==2):?>
-    <?//var_dump($selected_instrument);?>
-    <h3>Instrument: <?php echo $selected_instrument->product_name; ?></h3>
-    //TODO Load Instrument Picture
-    <p><?php echo $selected_instrument->product_photo_url;?></p>
+    <h3>Select An Instrument </h3>
+    <?php //var_dump($instruments); ?>
+    <div class="span11 offset1">
+        <?php foreach($instruments as $instrument):?>
 
-    <?php echo $plan_description; ?>
+            <div class="pull-left well-small" >
+                <a href="<?php echo $instrument_url. 'instrument=' .$instrument->product_id;?>" class="instrument_link">
+                    <!---description--->
+                    <h4 style="width:150px; text-align: center; height: 3em;"><?php echo $instrument->product_name;?></h4>
+                    <!---img-->
 
-    <?php if (!empty($rent_own_url)):?>
-        <a href="<?php echo $rent_own_url;?>">Rent To Own</a>
-        <?php endif;?>
-    <?php if (!empty($rent_only_url)):?>
-        <a href="<?php echo $rent_only_url;?>">Rent Only</a>
-        <?php endif;?>
-    <?php endif; ?>
+                </a>
+            </div>
+            <?php endforeach;?>
+        <div class="clearfix"></div>
+    </div>
+<?php endif; ?>
 
 
 <?php if ($page==3):?>
-    <h3>Instrument Level</h3>
-
-    //TODO Display Options
-
-    <?php endif; ?>
+    <h3>Instrument: <?php echo $selected_instrument->product_name; ?> </h3>
+    <?php //var_dump($instruments); ?>
+    <div class="span11 offset1">
+        <?php echo $selected_instrument->product_description; ?>
+        <div class="clearfix"></div>
+    </div>
+<?php endif; ?>
 
 
 <?php if ($page==4):?>
@@ -61,124 +84,212 @@
 
     <p> M&R will be included with the rental of any string instrument.</p>
 
-    //TODO make optional
-    <p>Price: $<?php echo $m_r_price;?></p>
-    <?php endif; ?>
+    <strong>
+        <?php if (! empty($m_r_information) ): ?>
+        <input type="checkbox" name="<?php echo $m_r_information[1][0]->formfield_label; ?>" id="optional_m_r" checked="checked"/> Include this option in my rental.
+        <?php endif; ?>
+        Price: $<?php echo $m_r_price;?></strong>
+<?php endif; ?>
 
 
 <?php if ($page==5):?>
-    <h3>Accessories</h3>
-    //TODO School Filter
-    <select name="school_filter"><?php foreach($schools as $school):?>
+<h3>Rental Invoice</h3>
 
-        <option value="<?php echo $school->school_id; ?>"><?php echo $school->school; ?></option>
+<p>Please review the following pricing and provide us with the requested information to complete your online instrument rental.
+    Your application will then be submitted. Once reviewed, you will receive an e-mail receipt containing a copy of your rental
+    contract or purchase agreement.</p>
 
-        <?php endforeach;?></select>
+<div class="totalbox">
+    <h4>Summary</h4><p></p>
+    <div class="row-fluid">
+        <div class="span2">Total Due Now: </div>
+        <div class="span2"><div class="pull-right">$<?php echo number_format($total_due,2);?></div></div>
+    </div>
+    <div class="row-fluid">
+        <div class="span4"><hr></div>
+    </div>
+    <div class="row-fluid">
+        <div class="span2">First 2 Months Rental: </div>
+        <div class="span2"><div class="pull-right">$<?php echo $two_months_rental;?></div></div>
+    </div>
+    <div class="row-fluid">
+        <div class="span4"><hr></div>
+    </div>
+    <div class="row-fluid">
+        <div class="span2">Monthly Total: <br/><em>Due <?php echo $due_date;?></em></div>
+        <div class="span2"><div class="pull-right">$<?php echo number_format($monthly_rental + $m_r_price,2);?></div></div>
+    </div>
+</div>
+<p></p>
 
-    <?php //var_dump($accessories);?>
+<div class="pricebox">
+    <h4>Detailed Rental Fees</h4><p></p>
+    <div class="subbox">
+        <!--extra fields for rent-to-own-->
+        <?php if(! empty($r_own_selected) && $r_own_selected === TRUE): ?>
+        <div class="row-fluid">
+            <div class="span2">Instrument Price: </div>
+            <div class="span2"><div class="pull-right">$<?php echo $price_instrument;?></div></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2">Instrument Tax: </div>
+            <div class="span2"><div class="pull-right">$<?php echo $tax_instrument;?></div></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2">Instrument Total Cost: </div>
+            <div class="span2"><div class="pull-right">$<?php echo $cost_instrument;?></div></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2">Instrument Service Charge: </div>
+            <div class="span2"><div class="pull-right">$<?php echo $service_charge;?></div></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2">Total of Payments: </div>
+            <div class="span2"><div class="pull-right">$<?php echo $total_payments?></div></div>
+        </div>
 
-    <?php foreach($accessories as $accessory):?>
+        <?php endif; ?>
+        <!-------------------------------->
 
-        <p><input type="checkbox" value="<?php echo $accessory->accessory_id;?>" /> <?php echo $accessory->product_name; ?></p>
+        <div class="row-fluid">
+            <div class="span2">Accessories Subtotal: </div>
+            <div class="span2"><div class="pull-right">$<?php echo $subtotal_accessories;?></div></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span4"><hr></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2">Accessories Tax: </div>
+            <div class="span2"><div class="pull-right">$<?php echo $tax_accessories;?></div></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span4"><hr></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2">Accessories Total:</div>
+            <div class="span2"><div class="pull-right"> $<?php echo number_format($subtotal_accessories+$tax_accessories,2)?></div></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span4"><hr></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2">2 Months Rental Fee: </div>
+            <div class="span2"><div class="pull-right">$<?php echo $two_months_rental;?></div></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span4"><hr></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2">2 Months Maintenance and Replacement Fee: </div>
+            <div class="span2"><div class="pull-right">$<?php echo number_format(2*$m_r_price,2);?></div></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span4"><hr></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2">Total Due Now: </div>
+            <div class="span2"><div class="pull-right"> $<?php echo number_format($total_due,2);?></div></div>
+        </div>
 
-        <?php endforeach; ?>
+    </div>
+
+    <br/><br/><br/>
+    <div class="subbox">
+        <div class="row-fluid">
+            <div class="span2">Monthly Rental Fee:</div>
+            <div class="span2"><div class="pull-right"> $<?php echo $monthly_rental;?></div></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span4"><hr></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2">Monthly Maintenance and Replacement:  </div>
+            <div class="span2"><div class="pull-right">$<?php echo $m_r_price;?></div></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span4"><hr></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2">Total Monthly Fee:</div>
+            <div class="span2"><div class="pull-right"> $<?php echo number_format($monthly_rental + $m_r_price,2);?></div></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span4"><hr></div>
+        </div>
+        <!--extra fields for rent-to-own-->
+        <?php if(! empty($r_own_selected) && $r_own_selected === TRUE): ?>
+        <div class="row-fluid">
+            <div class="span2">Number of Monthly Payments: </div>
+            <div class="span2"><div class="pull-right"><?php echo $installments;?></div></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2">Final Payment: </div>
+            <div class="span2"><div class="pull-right">$<?php echo $final_payment;?></div></div>
+        </div>
+
+        <?php endif; ?>
+        <!-------------------------------->
+
+
+
+        <div class="row-fluid">
+            <div class="span2">First Installment Due: </div>
+            <div class="span2"><div class="pull-right">  <?php echo $due_date;?></div></div>
+        </div>
+    </div>
+
+</div>
 
     <?php endif; ?>
 
+<!---contract form-->
 
 <?php if ($page==6):?>
-    <h3>Rental Invoice</h3>
-
-    <p>Please review the following pricing and provide us with the requested information to complete your online instrument rental.
-        Your application will then be submitted. Once reviewed, you will receive an e-mail receipt containing a copy of your rental
-        contract or purchase agreement.</p>
-
-    <div class="totalbox">
-        <h4>Summary</h4>
-        <p>Total Due Now: <?php //echo $total_due;?></p>
-        <hr>
-        <p>First 2 Months Rental: $<?php echo $two_months_rental;?></p>
-        <hr>
-        <p>Monthly Total: $<?php echo number_format($monthly_rental + $m_r_price,2);?> Due <?php echo $due_date;?></p>
-        <hr>
-    </div>
-
-    <div class="pricebox">
-        <h4>Detailed Rental Fees</h4>
-        <div class="subbox">
-            <p>Accessories Subtotal</p><hr/>
-
-            <p>Accessories Tax //TODO</p><hr/>
-
-            <p>Accessories Total//TODO</p><hr/>
-
-            <p>2 Months Rental Fee: $<?php echo $two_months_rental;?></p><hr/>
-
-            <p>2 Months Maintenance and Replacement Fee: $<?php echo number_format(2*$m_r_price,2);?></p><hr/>
-
-            <div class="grandtotal"><p>Total Due Now//TODO</p></div>
-
-        </div>
-
-        <div class="subbox">
-            <p>Monthly Rental Fee: $<?php echo $monthly_rental;?></p><hr/>
-
-            <p>Monthly Maintenance and Replacement: $<?php echo $m_r_price;?></p><hr/>
-
-            <div class="grandtotal">
-                <p>Total Monthly Fee: $<?php echo number_format($monthly_rental + $m_r_price,2);?></p><hr/>
-                <p> First Installment Due: <?php echo $due_date;?></p>
-            </div>
-        </div>
-
-
-
-    </div>
-
-
-    <?php endif; ?>
-
-<?php if ($page==7):?>
-    <h3><?php echo $general_information[0]->formsection_name;?></h3>
-
+<h3><?php echo $general_information[0]->formsection_name;?></h3>
+<form method="POST" action="#" class="pageData">
+    <input type="hidden" name="formSection" value="<?php echo $general_information[0]->formsection_name;?>"/>
     <?php $count = 0; ?>
-        <div class="span3">
-        <?php foreach($general_information[1] as $item ):?>
+<div class="span3">
+    <?php foreach($general_information[1] as $item ):?>
+
+    <?php if ($count == 4 || $count == 9): //make a new column?>
+                 </div><div class="span3">
+            <?php endif;?>
+
+    <div id="<?php echo $item->formfield_name;?>Group">
+        <?php echo form_input($item->formfield_name,$this->session->userdata('field_'.$item->formfield_name), $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
+    </div>
+    <?php $count++;?>
+    <?php endforeach;?>
+</div>
+</form>
+    <?php endif;?>
+
+<?php if ($page==7):
+    $references = "{$employer_information[0]->formsection_name},{$spouse_information[0]->formsection_name},{$reference_information[0]->formsection_name}";?>
+    </div><div class="row-fluid"><!--start a new row-->
+    <form method="POST" action="#" class="pageData">
+        <input type="hidden" name="formSection" value="<?php echo $references;?>"/>
+        <h3><?php echo $employer_information[0]->formsection_name;?></h3>
+
+        <?php $count = 0; ?>
+    <div class="span3">
+        <?php foreach($employer_information[1] as $item ):?>
 
         <?php if ($count == 4 || $count == 9): //make a new column?>
                  </div><div class="span3">
             <?php endif;?>
 
-        <label><?php echo $item->formfield_label;?></label>
-        <input type="text" name="<?php echo $item->formfield_name;?>" class="" />
-
-        <?php $count++;?>
-        <?php endforeach;?>
+        <div id="<?php echo $item->formfield_name;?>Group">
+            <?php echo form_input($item->formfield_name,$this->session->userdata('field_'.$item->formfield_name), $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
         </div>
-    <?php endif;?>
-
-<?php if ($page==8):?>
-
-
-    <h3><?php echo $employer_information[0]->formsection_name;?></h3>
-
-    <?php $count = 0; ?>
-    <div class="span3">
-        <?php foreach($employer_information[1] as $item ):?>
-
-        <?php if ($count == 4 || $count == 9): //make a new column?>
-            <!--/div><div class="span3"-->
-            <?php endif;?>
-
-        <label><?php echo $item->formfield_label;?></label>
-        <input type="text" name="<?php echo $item->formfield_name;?>" class="" />
 
         <?php $count++;?>
         <?php endforeach;?>
     </div>
 
 
-    </div><div class="row-fluid"><!--start a new row -->
+</div><div class="row-fluid"><!--start a new row-->
     <h3><?php echo $spouse_information[0]->formsection_name;?></h3>
     <?php $count = 0; ?>
 <div class="span3">
@@ -188,36 +299,40 @@
             </div><div class="span3">
             <?php endif;?>
 
-        <label><?php echo $item->formfield_label;?></label>
-        <input type="text" name="<?php echo $item->formfield_name;?>" class="" />
+        <div id="<?php echo $item->formfield_name;?>Group">
+            <?php echo form_input($item->formfield_name,$this->session->userdata('field_'.$item->formfield_name), $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
+        </div>
 
         <?php $count++;?>
         <?php endforeach;?>
 </div>
 
-</div><div class="row-fluid"><!--start a new row -->
+</div><div class="row-fluid"><!--start a new row-->
 <h3><?php echo $reference_information[0]->formsection_name;?></h3>
     <?php $count = 0; ?>
         <div class="span3">
         <?php foreach($reference_information[1] as $item ):?>
 
-        <?php if ($count == 3 ): //make a new column?>
+    <?php if ($count == 3 ): //make a new column?>
             </div><div class="span3">
             <?php endif;?>
 
-        <label><?php echo $item->formfield_label;?></label>
-        <input type="text" name="<?php echo $item->formfield_name;?>" class="" />
+    <div id="<?php echo $item->formfield_name;?>Group">
+        <?php echo form_input($item->formfield_name,$this->session->userdata('field_'.$item->formfield_name), $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
+    </div>
 
-        <?php $count++;?>
-        <?php endforeach;?>
+    <?php $count++;?>
+    <?php endforeach;?>
         </div>
 
 
-
+    </form>
     <?php endif;//end of page 8?>
 
 
-<?php if ($page==9):?>
+<?php if ($page==8):?>
+        <form method="POST" action="#" class="pageData">
+        <input type="hidden" name="formSection" value="<?php echo $payment_information[0]->formsection_name;?>"/>
 <h3><?php echo $payment_information[0]->formsection_name;?></h3>
 
     <?php $count = 0; ?>
@@ -228,15 +343,17 @@
         <!--/div><div class="span3"-->
         <?php endif;?>
 
-    <label><?php echo $item->formfield_label;?></label>
-    <input type="text" name="<?php echo $item->formfield_name;?>" class="" />
+    <div id="<?php echo $item->formfield_name;?>Group">
+        <?php echo form_input($item->formfield_name,$this->session->userdata('field_'.$item->formfield_name), $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
+    </div>
 
     <?php $count++;?>
     <?php endforeach;?>
 </div>
+        <form>
     <?php endif;?>
 
-<?php if ($page==10):?>
+<?php if ($page==9):?>
 <h3>Terms of Service</h3>
 
 <div class="span8 offset2">
@@ -417,24 +534,35 @@
     </p>
 
     <hr />
-    <?php foreach($terms_information[1] as $item ):?>
-    <label><?php echo $item->formfield_label;?></label>
-    <input type="text" name="<?php echo $item->formfield_name;?>" class="" />
-    <?php endforeach;?>
+    <form method="POST" action="#" class="pageData">
+        <input type="hidden" name="formSection" value="<?php echo $terms_information[0]->formsection_name;?>"/>
+        <?php foreach($terms_information[1] as $item ):?>
+        <div id="<?php echo $item->formfield_name;?>Group">
+            <?php echo form_input($item->formfield_name,$this->session->userdata('field_'.$item->formfield_name), $item->formfield_label, '','<p><span class="help-inline"></span></p>');?>
+        </div>
+        <?php endforeach;?>
+    </form>
 </div>
 
     <?php endif;?>
 
-<?php if ($page==11):?>
+<?php if ($page==10):?>
 //Yay!!! finished
-    <?php endif;?>
+<script>
+    sendReceipts = 'yes';
+</script>
+<?php endif;?>
 
-</div>
+</div><!--end of page row-->
+
 <div class="row-fluid">
     <!--controls-->
     <!--pagenation-->
     <?php echo $pagination;?>
 </div>
-</section>
 
-<?php //var_dump($rental_plan);?>
+<!--js config variables-->
+<script>
+    page = <?php echo $page;?>;
+    resource = '<?php echo $resource;?>';
+</script>

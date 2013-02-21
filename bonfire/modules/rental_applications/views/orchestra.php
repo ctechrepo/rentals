@@ -138,7 +138,7 @@
     <input type="checkbox" name="<?php echo $m_r_information[1][0]->formfield_label; ?>" id="optional_m_r" checked="checked"/> Include this option in my rental.
     <?php endif; ?>
     Price: $<?php echo $m_r_price;?></strong>
-    <?php endif; ?>
+ <?php endif; ?>
 
 
 <?php if ($page==5):?>

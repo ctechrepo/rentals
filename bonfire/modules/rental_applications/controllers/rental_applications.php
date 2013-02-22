@@ -368,6 +368,8 @@ class Rental_applications extends Front_Controller
             $this->session->unset_userdata('group');
             $this->session->unset_userdata('instrument');
             $this->session->set_userdata('seen_pages',serialize(array("page1"=>"yes")));
+            
+            //TODO clear field session data
         }
 
 
@@ -404,6 +406,11 @@ class Rental_applications extends Front_Controller
             case 5:
                 $this->bravo_invoice($plan_details,$number_of_payments,$instrument);
 
+                break;
+            case 6: //fall to next case
+            case 7: //fall to next case
+            case 8: //fall to next case
+            case 9: $this->rental_form('bravo');
                 break;
         }
 
@@ -671,11 +678,13 @@ class Rental_applications extends Front_Controller
     private function bravo_invoice($rental_details,$number_of_payments,$instrument)
     {
       Template::set('installments',$number_of_payments);
+      $this->session->set_userdata("field_numberMonthlyPayments",$number_of_payments);
 
       $base = $rental_details->base_rental_price;
 
       $m_r_price = $rental_details->maintenance_price + $rental_details->replacement_price;
       Template::set('m_r_price',number_format($m_r_price,2));
+      $this->session->set_userdata("field_mrFee",number_format($m_r_price,2));
 
       $adjustment = 0;
       switch($number_of_payments)
@@ -691,6 +700,10 @@ class Rental_applications extends Front_Controller
       $monthly_rental = $base + $adjustment;
       Template::set('monthly_rental',number_format($monthly_rental,2));
 
+      $this->session->set_userdata("field_totalDue",number_format($monthly_rental+$m_r_price,2));
+      $this->session->set_userdata("field_totalMonthly",number_format($monthly_rental+$m_r_price,2));
+      $this->session->set_userdata("field_monthlyRentalFee",number_format($monthly_rental,2));
+
       $buy_price = $instrument->product_price;
 
       $tax_instrument = $buy_price * ($this->sales_tax/100);
@@ -700,18 +713,29 @@ class Rental_applications extends Front_Controller
       $service_charge = $cost_instrument * ($this->interest_rate/100);
 
       Template::set('price_instrument',number_format($buy_price,2));
+      $this->session->set_userdata('field_price',number_format($buy_price,2));
+
       Template::set('tax_instrument',number_format($tax_instrument,2));
+      $this->session->set_userdata('field_tax',number_format($tax_instrument,2));
+
       Template::set('cost_instrument',number_format($cost_instrument,2));
+      $this->session->set_userdata('field_cashPrice',number_format($cost_instrument,2));
+
       Template::set('service_charge',number_format($service_charge,2));
+      $this->session->set_userdata('field_serviceCharge',number_format($service_charge,2));
+
       Template::set('total_payment',number_format($cost_instrument+$service_charge,2));
+      $this->session->set_userdata('field_totalPayments',number_format($cost_instrument+$service_charge,2));
 
       $final_payment = ($cost_instrument+$service_charge) - ($monthly_rental*$number_of_payments) - $monthly_rental + $m_r_price;
       if ($final_payment < 0){$final_payment = 0;}
 
       Template::set('final_payment',number_format($final_payment,2));
+      $this->session->set_userdata("field_finalPayment",number_format($final_payment,2));
 
-
-      Template::set('due_date',$this->due_date());
+      $due_date = $this->due_date();
+      Template::set('due_date',$due_date);
+      $this->session->set_userdata("field_debitMonth",$due_date);
 
         //var_dump($instrument); die();
     }
@@ -795,8 +819,8 @@ class Rental_applications extends Front_Controller
         Template::set('rental_plan',$rental_details);
         //Template::set('rental_plan',$prices);
 
-
-        Template::set('due_date',$this->due_date());
+        $due_date = $this->due_date();
+        Template::set('due_date',$due_date);
         $this->session->set_userdata("field_debitMonth",$due_date);
     }
 

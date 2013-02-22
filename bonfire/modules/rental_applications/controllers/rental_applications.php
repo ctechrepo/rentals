@@ -325,13 +325,20 @@ class Rental_applications extends Front_Controller
     public function bravo(){
 
         $resource = 'bravo';
+
+        //------------static variables that may change in the future------//
+        $number_of_payments = 36;
+
+
+
+        $seen_pages = array();
         //----------------------------Input---------------------//
         $curr_page = $this->uri->segment(4)?$this->uri->segment(4):1; //check_uri for current_page
 
         $group_id = $this->input->get('group')?$this->input->get('group'):$this->session->userdata('group');
         $this->session->set_userdata('group',$group_id);
 
-        $instrument_id = $this->input->get('instrument')?$this->input->get('instrument'):$this->session->userdata('group');
+        $instrument_id = $this->input->get('instrument')?$this->input->get('instrument'):$this->session->userdata('instrument');
         $this->session->set_userdata('instrument',$instrument_id);
 
         //-----------Redirects---------------------//
@@ -345,14 +352,23 @@ class Rental_applications extends Front_Controller
             exit;
         }
 
+        //-----------update seen pages------------------//
+        $prev_seen = unserialize($this->session->userdata('seen_pages'));
+        $seen_pages["page".$curr_page] = "yes";
+        if (! empty($prev_seen))
+        {
+            $seen_pages = array_merge($prev_seen,$seen_pages);
+        }
+        $this->session->set_userdata('seen_pages',serialize($seen_pages));
+
+
         //---------Reset Session data on first page-----//
         if ( $curr_page == 1)
         {
             $this->session->unset_userdata('group');
             $this->session->unset_userdata('instrument');
+            $this->session->set_userdata('seen_pages',serialize(array("page1"=>"yes")));
         }
-
-
 
 
         //----------------------------What to Do---------------------//
@@ -360,6 +376,10 @@ class Rental_applications extends Front_Controller
             $instrument = $this->get_instrument($instrument_id);
             Template::set('selected_instrument', $instrument);
             $this->session->set_userdata("field_instrumentName",$instrument->product_name);
+        }
+
+        if ($curr_page > 3){
+           $plan_details = $this->get_rental_details($instrument_id,$resource);
         }
 
 
@@ -374,6 +394,15 @@ class Rental_applications extends Front_Controller
             case 2: //rental description for the selected instrument
                 Template::set('instruments',$this->get_rental_products('bravo',$group_id));
                 Template::set('instrument_url',site_url("rental_applications/$resource/page/3/?"));
+
+                break;
+            case 4:
+                $m_r_price = $plan_details->maintenance_price + $plan_details->replacement_price;
+                Template::set('m_r_price',$m_r_price);
+
+                break;
+            case 5:
+                $this->bravo_invoice($plan_details,$number_of_payments,$instrument);
 
                 break;
         }
@@ -577,24 +606,17 @@ class Rental_applications extends Front_Controller
     private function get_rental_details($product_id,$rental_plan)
     {
         $plan_id = $this->plan_id($rental_plan) or die("A rentalplan_id doesn't exist for this resource.");
+        //TODO add cache control statement
 
-        if ($rental_plan === 'band' || $rental_plan ==='orchestra')
-        {
-            $this->load->model('standard_rental_model','plan');
-            //TODO add cache control statement
+        if ($rental_plan === 'band' || $rental_plan ==='orchestra'){$this->load->model('standard_rental_model','plan');}
 
-            return $this->plan->find(array($product_id,$plan_id));
-        }
+        if ($rental_plan == 'bravo') { $this->load->model('bravo_rental_model','plan'); }
 
-        if ($rental_plan == 'bravo')
-        {
-            $this->load->model('bravo_rental_model','plan');
+        $details = $this->plan->find(array($product_id,$plan_id));
 
-            return $this->plan->find(array($product_id,$plan_id));
-        }
+        $details or die("This instrument: $product_id is not assigned to a rental plan.");
 
-        return array();
-
+        return $details;
     }
 
     private function plan_id($resource)
@@ -644,6 +666,54 @@ class Rental_applications extends Front_Controller
         echo "<form id='test' method='POST'>
 
         </form>";
+    }
+
+    private function bravo_invoice($rental_details,$number_of_payments,$instrument)
+    {
+      Template::set('installments',$number_of_payments);
+
+      $base = $rental_details->base_rental_price;
+
+      $m_r_price = $rental_details->maintenance_price + $rental_details->replacement_price;
+      Template::set('m_r_price',number_format($m_r_price,2));
+
+      $adjustment = 0;
+      switch($number_of_payments)
+      {
+          case 12: $adjustment = $rental_details->tweleve_month_adjustment;
+              break;
+          case 24: $adjustment = $rental_details->twentyfour_month_adjustment;
+              break;
+          case 36: $adjustment = $rental_details->thirtysix_month_adjustment;
+              break;
+      }
+
+      $monthly_rental = $base + $adjustment;
+      Template::set('monthly_rental',number_format($monthly_rental,2));
+
+      $buy_price = $instrument->product_price;
+
+      $tax_instrument = $buy_price * ($this->sales_tax/100);
+
+      $cost_instrument = $buy_price + $tax_instrument;
+
+      $service_charge = $cost_instrument * ($this->interest_rate/100);
+
+      Template::set('price_instrument',number_format($buy_price,2));
+      Template::set('tax_instrument',number_format($tax_instrument,2));
+      Template::set('cost_instrument',number_format($cost_instrument,2));
+      Template::set('service_charge',number_format($service_charge,2));
+      Template::set('total_payment',number_format($cost_instrument+$service_charge,2));
+
+      $final_payment = ($cost_instrument+$service_charge) - ($monthly_rental*$number_of_payments) - $monthly_rental + $m_r_price;
+      if ($final_payment < 0){$final_payment = 0;}
+
+      Template::set('final_payment',number_format($final_payment,2));
+
+
+      Template::set('due_date',$this->due_date());
+
+        //var_dump($instrument); die();
     }
 
     private function standard_invoice($accessories,$rental_details,$level)
@@ -726,6 +796,11 @@ class Rental_applications extends Front_Controller
         //Template::set('rental_plan',$prices);
 
 
+        Template::set('due_date',$this->due_date());
+        $this->session->set_userdata("field_debitMonth",$due_date);
+    }
+
+    private function due_date(){
         // installment due dates
         // 1. if it is the 5th or the 20th of the month, simply add 2 months.
         // 2. if the day of the month is less than 20, then move to the 20th of the month and add 2 months.
@@ -742,17 +817,16 @@ class Rental_applications extends Front_Controller
 
         elseif ($day>20) {
         //move to the 5th of next month and add 2 months
-            $due_date=date('m/d/Y', strtotime("$month/5/$year + 1 month"));
-            $due_date=date('m/d/Y', strtotime("$due_date + 2 months"));
+        $due_date=date('m/d/Y', strtotime("$month/5/$year + 1 month"));
+        $due_date=date('m/d/Y', strtotime("$due_date + 2 months"));
         }
 
-        elseif ($day<20) {
+        else{ //the day is less than 20
         //move to the 20th of the month and add 2 months
-            $due_date=date('m/d/Y', strtotime("$month/20/$year + 2 months"));
+        $due_date=date('m/d/Y', strtotime("$month/20/$year + 2 months"));
         }
 
-        Template::set('due_date',$due_date);
-        $this->session->set_userdata("field_debitMonth",$due_date);
+        return $due_date;
     }
 
 

@@ -77,7 +77,7 @@ class bravo_rental_model extends MY_Model
         $plan = $this->db->dbprefix('rentalplan');
         $product = $this->db->dbprefix('product');
 
-        $where = "rentalplan_name = 'bravo band' or rentalplan_name = 'bravo orchestra' ";
+        $where = "rentalplan_name LIKE '%bravo%' ";
 
         $this->crud
             ->set_subject('Bravo Rental')

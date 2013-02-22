@@ -194,7 +194,9 @@ class product_model extends MY_Model{
             ->display_as($cols[5],'Model')
             ->display_as($cols[6],'SKU')
 
-            ->fields($cols[1],$cols[2],$cols[3],$cols[4],$cols[5],$cols[6],'Accessories')
+            ->display_as($cols[7],'Price')//may need to hide this field for standard rentals
+
+            ->fields($cols[1],$cols[2],$cols[3],$cols[4],$cols[5],$cols[6],$cols[7],'Accessories')
             ->set_field_upload($cols[4],'assets/uploads/files')
         ;
 

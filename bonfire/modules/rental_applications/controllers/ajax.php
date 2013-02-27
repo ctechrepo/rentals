@@ -83,6 +83,20 @@ class Ajax extends Front_Controller
         echo json_encode($this->response);
     }
 
+    public function notify(){
+        $this->response['error'] = 'none';
+
+        $method = $this->input->post('method');
+
+        require "notify.php";
+
+        $notify = new Notify();
+
+        $notify->send($method);
+
+        echo json_encode($this->response);
+    }
+
     /**
      * Ajax pagination request.
      *

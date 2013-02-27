@@ -26,13 +26,15 @@ class Rental_applications extends Front_Controller
         $this->sales_tax = $this->config->item('sales_tax');
         $this->interest_rate = $this->config->item('interest_rate');
 
+        $this->load->library('grocery_crud');
+
         $this->load->helper('html');
         $this->load->helper('file');
         $this->load->helper('form');
 
 
         $this->load->add_package_path(APPPATH.'third_party/phpThumb/');
-        $this->load->helper('PHPThumb');
+        $this->load->helper('phpthumb');
         Template::set('thumbnail',new Thumbnail());
         Assets::add_module_js('rental_applications','jquery.cookie.js');
         Assets::add_module_js('rental_applications','rental_applications.js');
@@ -368,7 +370,7 @@ class Rental_applications extends Front_Controller
             $this->session->unset_userdata('group');
             $this->session->unset_userdata('instrument');
             $this->session->set_userdata('seen_pages',serialize(array("page1"=>"yes")));
-            
+
             //TODO clear field session data
         }
 
@@ -965,13 +967,6 @@ class Rental_applications extends Front_Controller
        }
         $contractno = md5(time().$this->session->userdata('field_initials'));
         $this->session->set_userdata("contractno",$contractno);
-        $this->load->model('rentalplan_to_form_model','rentalform');
-
-
-
-        $form = $this->rentalform->get_forms(1);
-
-        var_dump($form);
 
     }
 }

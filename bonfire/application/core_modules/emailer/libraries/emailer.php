@@ -80,6 +80,10 @@ class Emailer
 	 */
 	private $ci;
 
+
+
+    private $attachments = array();
+
 	//--------------------------------------------------------------------
 
 	/**
@@ -92,6 +96,11 @@ class Emailer
 		$this->ci =& get_instance();
 	}
 
+
+    public  function attach($file)
+    {
+        $this->attachments = array_push($this->attachments,$file);
+    }
 	//--------------------------------------------------------------------
 
 	/**
@@ -217,6 +226,11 @@ class Emailer
 		$this->ci->email->from($from, settings_item('site.title'));
 		$this->ci->email->subject($subject);
 		$this->ci->email->message($message);
+
+        foreach ($this->attachments as $attach){
+            $this->ci->email->attach($attach);
+        }
+
 
 		if ($alt_message)
 		{

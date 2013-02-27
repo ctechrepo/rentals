@@ -105,11 +105,40 @@ baseUrl = "//localhost:8888/rentals/rental_applications/";
   // receipt driver
  function receipts()
  {
+    console.log("creating receipts");
     createReceipt('unsecure');
     createReceipt('secure');
 
  }
 
+ function receiptCallBack(level){
+
+     switch(level)
+     {
+         case 'unsecure':
+             return function(data){
+                 sendEmail('receipt');
+             };
+
+         case 'secure':
+             return function(data){
+                 sendEmail('notice');
+             };
+
+     }
+ }
+
+ function sendEmail(type)
+ {
+     var params = {
+        method: type,
+        resource: resource,
+        ci_csrf_token: csrf_token
+     };
+
+     var url = ajaxController+'notify';
+     $.post(url,params);
+ }
 
  function createReceipt(level){
      //var params = 'ci_csrf_token='+csrf_token;
@@ -127,9 +156,7 @@ baseUrl = "//localhost:8888/rentals/rental_applications/";
          type:"POST",
          url: ajaxController+'receipt',
          data: params,
-         success: function(data){
-                console.log(data);
-         },
+         success: receiptCallBack(level),
          dataType: 'json'
      })
       .fail(function(){

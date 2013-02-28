@@ -10,8 +10,19 @@ class Notify extends Front_Controller {
         //$this->load->library('emailer/emailer');
         $this->load->library('email');
 
+        $this->load->library('encrypt');//needed to decode excahanged data
+        $this->encrypt->set_cipher(MCRYPT_BLOWFISH);
+
     }
 
+
+    private function test_encrypt()
+    {
+        $to = $this->session->userdata("field_email");
+        $to = $this->encrypt->decode($to);
+
+        echo $to;
+    }
 
     private function test_email()
     {
@@ -64,16 +75,24 @@ class Notify extends Front_Controller {
     private function send_receipt (){
 
         $to = $this->session->userdata("field_email");
+        $to = $this->encrypt->decode($to);
 
         $subject = "The Music Shoppe: Rental Confirmation";
 
         $instrument = $this->session->userdata("field_instrumentName");
+        //$instrument = $this->encrypt->decode($instrument);
 
-        $renter = $this->session->userdata("field_rentersFirstName")." ".
-            $this->session->userdata("field_rentersMiddleInitial")." ".
-            $this->session->userdata("field_rentersLastName");
+         $first_name = $this->session->userdata("field_rentersFirstName");
+         $middle_initial = $this->session->userdata("field_rentersMiddleInitial");
+         $last_name = $this->session->userdata("field_rentersLastName");
+
+        $renter = $this->encrypt->decode($first_name)
+            ." ".$this->encrypt->decode($middle_initial)
+            ." ".$this->encrypt->decode($last_name);
+
 
         $contractid = $this->session->userdata('contractno');
+        //$contractid = $this->encrypt->decode($contractid);
 
 
         $message = "Instrument: ".$instrument."\r\n"
@@ -95,13 +114,20 @@ class Notify extends Front_Controller {
         $subject = "Notice: A New Rental Application";
 
         $instrument = $this->session->userdata("field_instrumentName");
+        //$instrument = $this->encrypt->decode($instrument);
 
-        $renter = $this->session->userdata("field_rentersFirstName")." ".
-                  $this->session->userdata("field_rentersMiddleInitial")." ".
-                  $this->session->userdata("field_rentersLastName");
+        $first_name = $this->session->userdata("field_rentersFirstName");
+        $middle_initial = $this->session->userdata("field_rentersMiddleInitial");
+        $last_name = $this->session->userdata("field_rentersLastName");
+
+        $renter = $this->encrypt->decode($first_name)
+            ." ".$this->encrypt->decode($middle_initial)
+            ." ".$this->encrypt->decode($last_name);
 
         $rental_program =  $this->input->post("resource");
+
         $contractid = $this->session->userdata('contractno');
+        //$contractid = $this->encrypt->decode($contractid);
 
 
         $message = "Instrument: ".$instrument."\r\n"

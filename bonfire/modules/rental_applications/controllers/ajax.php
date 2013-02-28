@@ -25,6 +25,9 @@ class Ajax extends Front_Controller
         }*/
         $this->load->helper(array('form', 'url'));
 
+        $this->load->library('encrypt');
+        $this->encrypt->set_cipher(MCRYPT_BLOWFISH);
+
         $this->load->library('form_validation');
         $this->form_validation->CI =& $this; //HMVC HACK for form callbacks to function right.
 
@@ -138,7 +141,6 @@ class Ajax extends Front_Controller
     }
 
     public function test(){
-        $this->general_information('band');
         echo "<form action='#' method='POST'>
               <input type='hidden' name='ci_csrf_token' value='{$_COOKIE['ci_csrf_token']}'/>
               <input type='text' name='test' />
@@ -146,6 +148,12 @@ class Ajax extends Front_Controller
         </from>";
         var_dump($this->response);
         die();
+    }
+
+    public function encryptTest(){
+        $testVal = $this->encrypt->encode("HelloWord");
+        echo "secure: ".$testVal."<br>";
+        echo "plain: ".$this->encrypt->decode($testVal)."<br>";
     }
 
     //--------------------helper methods-------------------------------------
@@ -209,9 +217,8 @@ class Ajax extends Front_Controller
            foreach($fields  as $field)
            {
                $name = $field->formfield_name;
-               $val =  set_value($name);
-               //@TODO encrypt sensitive data before saving.
-
+               $val = set_value($name);
+               $val = $this->encrypt->encode($val);//all data is treated sensitive.
                $this->session->set_userdata('field_'.$name,$val);
            }
        }

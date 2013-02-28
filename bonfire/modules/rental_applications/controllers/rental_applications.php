@@ -28,6 +28,10 @@ class Rental_applications extends Front_Controller
 
         $this->load->library('grocery_crud');
 
+
+        $this->load->library('encrypt');//needed to decode excahanged data
+        $this->encrypt->set_cipher(MCRYPT_BLOWFISH);
+
         $this->load->helper('html');
         $this->load->helper('file');
         $this->load->helper('form');
@@ -107,7 +111,7 @@ class Rental_applications extends Front_Controller
         } elseif ($curr_page != 1) { //get information related to the selected instrument.
             $instrument = $this->get_instrument($instrument_id);
             Template::set('selected_instrument', $instrument);
-            $this->session->set_userdata("field_instrumentName",$instrument->product_name);
+            $this->keep_safe("field_instrumentName",$instrument->product_name);
             $rental_details = $this->get_rental_details($instrument_id,'band');
             $rent_only_option = $rental_details->rent_only_price > 0;
             $this->standard_rental($rental_details,$level,'band');
@@ -239,7 +243,7 @@ class Rental_applications extends Front_Controller
         } elseif ($curr_page != 1) { //get information related to the selected instrument.
             $instrument = $this->get_instrument($instrument_id);
             Template::set('selected_instrument', $instrument);
-            $this->session->set_userdata("field_instrumentName",$instrument->product_name);
+            $this->keep_safe("field_instrumentName",$instrument->product_name);
 
             $rental_details = $this->get_rental_details($instrument_id,'orchestra');
             $rent_only_option = $rental_details->rent_only_price > 0;
@@ -379,7 +383,7 @@ class Rental_applications extends Front_Controller
         if (! empty($instrument_id) ){
             $instrument = $this->get_instrument($instrument_id);
             Template::set('selected_instrument', $instrument);
-            $this->session->set_userdata("field_instrumentName",$instrument->product_name);
+            $this->keep_safe("field_instrumentName",$instrument->product_name);
         }
 
         if ($curr_page > 3){
@@ -459,7 +463,7 @@ class Rental_applications extends Front_Controller
         if (!empty($instrument_id)){
             $instrument = $this->get_instrument($instrument_id);
             Template::set('selected_instrument', $instrument);
-            $this->session->set_userdata("field_instrumentName",$instrument->product_name);
+            $this->keep_safe("field_instrumentName",$instrument->product_name);
 
             $rental_details = $this->get_rental_details($instrument_id,'bravo');
 
@@ -665,8 +669,8 @@ class Rental_applications extends Front_Controller
             $sub_total += $item->product_price;
             $accessories_list .= $item->product_name.", ";
         }
-        $this->session->set_userdata("field_accessoriesList",$accessories_list);
-        $this->session->set_userdata("field_totalAccessoires",number_format($sub_total,2));
+        $this->keep_safe("field_accessoriesList",$accessories_list);
+        $this->keep_safe("field_totalAccessoires",number_format($sub_total,2));
         return $sub_total;
     }
 
@@ -680,13 +684,13 @@ class Rental_applications extends Front_Controller
     private function bravo_invoice($rental_details,$number_of_payments,$instrument)
     {
       Template::set('installments',$number_of_payments);
-      $this->session->set_userdata("field_numberMonthlyPayments",$number_of_payments);
+      $this->keep_safe("field_numberMonthlyPayments",$number_of_payments);
 
       $base = $rental_details->base_rental_price;
 
       $m_r_price = $rental_details->maintenance_price + $rental_details->replacement_price;
       Template::set('m_r_price',number_format($m_r_price,2));
-      $this->session->set_userdata("field_mrFee",number_format($m_r_price,2));
+      $this->keep_safe("field_mrFee",number_format($m_r_price,2));
 
       $adjustment = 0;
       switch($number_of_payments)
@@ -702,9 +706,9 @@ class Rental_applications extends Front_Controller
       $monthly_rental = $base + $adjustment;
       Template::set('monthly_rental',number_format($monthly_rental,2));
 
-      $this->session->set_userdata("field_totalDue",number_format($monthly_rental+$m_r_price,2));
-      $this->session->set_userdata("field_totalMonthly",number_format($monthly_rental+$m_r_price,2));
-      $this->session->set_userdata("field_monthlyRentalFee",number_format($monthly_rental,2));
+      $this->keep_safe("field_totalDue",number_format($monthly_rental+$m_r_price,2));
+      $this->keep_safe("field_totalMonthly",number_format($monthly_rental+$m_r_price,2));
+      $this->keep_safe("field_monthlyRentalFee",number_format($monthly_rental,2));
 
       $buy_price = $instrument->product_price;
 
@@ -715,29 +719,29 @@ class Rental_applications extends Front_Controller
       $service_charge = $cost_instrument * ($this->interest_rate/100);
 
       Template::set('price_instrument',number_format($buy_price,2));
-      $this->session->set_userdata('field_price',number_format($buy_price,2));
+      $this->keep_safe('field_price',number_format($buy_price,2));
 
       Template::set('tax_instrument',number_format($tax_instrument,2));
-      $this->session->set_userdata('field_tax',number_format($tax_instrument,2));
+      $this->keep_safe('field_tax',number_format($tax_instrument,2));
 
       Template::set('cost_instrument',number_format($cost_instrument,2));
-      $this->session->set_userdata('field_cashPrice',number_format($cost_instrument,2));
+      $this->keep_safe('field_cashPrice',number_format($cost_instrument,2));
 
       Template::set('service_charge',number_format($service_charge,2));
-      $this->session->set_userdata('field_serviceCharge',number_format($service_charge,2));
+      $this->keep_safe('field_serviceCharge',number_format($service_charge,2));
 
       Template::set('total_payment',number_format($cost_instrument+$service_charge,2));
-      $this->session->set_userdata('field_totalPayments',number_format($cost_instrument+$service_charge,2));
+      $this->keep_safe('field_totalPayments',number_format($cost_instrument+$service_charge,2));
 
       $final_payment = ($cost_instrument+$service_charge) - ($monthly_rental*$number_of_payments) - $monthly_rental + $m_r_price;
       if ($final_payment < 0){$final_payment = 0;}
 
       Template::set('final_payment',number_format($final_payment,2));
-      $this->session->set_userdata("field_finalPayment",number_format($final_payment,2));
+      $this->keep_safe("field_finalPayment",number_format($final_payment,2));
 
       $due_date = $this->due_date();
       Template::set('due_date',$due_date);
-      $this->session->set_userdata("field_debitMonth",$due_date);
+      $this->keep_safe("field_debitMonth",$due_date);
 
         //var_dump($instrument); die();
     }
@@ -745,8 +749,8 @@ class Rental_applications extends Front_Controller
     private function standard_invoice($accessories,$rental_details,$level)
     {
         $m_r_price = $rental_details->maintenance_price + $rental_details->replacement_price;
-        $this->session->set_userdata("field_mrFee",number_format($m_r_price,2));
-        $this->session->set_userdata("field_mr2months",number_format($m_r_price*2,2));
+        $this->keep_safe("field_mrFee",number_format($m_r_price,2));
+        $this->keep_safe("field_mr2months",number_format($m_r_price*2,2));
 
         $rent_to_own = array(
             'bronze'=>$rental_details->bronze_price,
@@ -762,12 +766,12 @@ class Rental_applications extends Front_Controller
         {
             $subtotal_accessories = $this->cost($accessories);
             $tax_accessories = $subtotal_accessories * ($this->sales_tax/100);
-            $this->session->set_userdata("field_tax2",number_format($tax_accessories,2));
+            $this->keep_safe("field_tax2",number_format($tax_accessories,2));
         }
         Template::set('subtotal_accessories',number_format($subtotal_accessories,2));
         Template::set('tax_accessories',number_format($tax_accessories,2));
 
-        $this->session->set_userdata('field_subtotal',number_format($subtotal_accessories+$tax_accessories,2));
+        $this->keep_safe('field_subtotal',number_format($subtotal_accessories+$tax_accessories,2));
 
         $monthly_rental = $rental_details->rent_only_price;
         $levels = array_keys($rent_to_own);
@@ -779,40 +783,40 @@ class Rental_applications extends Front_Controller
 
             $price_instrument = $detailsArray['purchase_price_'.$level];
             Template::set('price_instrument',number_format($price_instrument,2));
-            $this->session->set_userdata('field_price',number_format($price_instrument,2));
+            $this->keep_safe('field_price',number_format($price_instrument,2));
 
             $tax_instrument = $price_instrument * ($this->sales_tax/100);
             Template::set('tax_instrument',number_format($tax_instrument,2));
-            $this->session->set_userdata('field_tax',number_format($tax_instrument,2));
+            $this->keep_safe('field_tax',number_format($tax_instrument,2));
 
-            $this->session->set_userdata('field_cashPrice',number_format($tax_instrument+$price_instrument,2));
+            $this->keep_safe('field_cashPrice',number_format($tax_instrument+$price_instrument,2));
 
             $service_charge = $detailsArray['service_charge_'.$level];
             Template::set('service_charge',$service_charge);
-            $this->session->set_userdata('field_serviceCharge',number_format($service_charge,2));
+            $this->keep_safe('field_serviceCharge',number_format($service_charge,2));
 
             Template::set('cost_instrument',number_format($price_instrument+$tax_instrument,2));
             Template::set('total_payments',number_format($price_instrument+$tax_instrument+$service_charge,2));
-            $this->session->set_userdata('field_totalPayments',number_format($price_instrument+$tax_instrument+$service_charge,2));
+            $this->keep_safe('field_totalPayments',number_format($price_instrument+$tax_instrument+$service_charge,2));
 
             Template::set('installments',$rental_details->installments);
-            $this->session->set_userdata("field_numberMonthlyPayments",$rental_details->installments);
+            $this->keep_safe("field_numberMonthlyPayments",$rental_details->installments);
 
             $final_payment = ($price_instrument+$tax_instrument+$service_charge) - ($monthly_rental*$rental_details->installments) - $rental_details->two_month_price + $m_r_price;
             if ($final_payment < 0){$final_payment = 0;}
             Template::set('final_payment',number_format($final_payment,2));
-            $this->session->set_userdata("field_finalPayment",number_format($final_payment,2));
+            $this->keep_safe("field_finalPayment",number_format($final_payment,2));
 
             Template::set('r_own_selected',TRUE);
         }
         Template::set('monthly_rental',number_format($monthly_rental,2));
-        $this->session->set_userdata("field_monthlyRentalFee",number_format($monthly_rental,2));
+        $this->keep_safe("field_monthlyRentalFee",number_format($monthly_rental,2));
 
         $total_due = $subtotal_accessories + $tax_accessories + $rental_details->two_month_price + (2*$m_r_price);
-        $this->session->set_userdata("field_totalDue",number_format($total_due,2));
-        $this->session->set_userdata("field_rentalfee2months",number_format($rental_details->two_month_price,2));
+        $this->keep_safe("field_totalDue",number_format($total_due,2));
+        $this->keep_safe("field_rentalfee2months",number_format($rental_details->two_month_price,2));
 
-        $this->session->set_userdata("field_totalMonthly",number_format($monthly_rental+$m_r_price,2));
+        $this->keep_safe("field_totalMonthly",number_format($monthly_rental+$m_r_price,2));
 
         Template::set('two_months_rental',number_format($rental_details->two_month_price,2));
         Template::set('total_due',number_format($total_due,2));
@@ -823,7 +827,7 @@ class Rental_applications extends Front_Controller
 
         $due_date = $this->due_date();
         Template::set('due_date',$due_date);
-        $this->session->set_userdata("field_debitMonth",$due_date);
+        $this->keep_safe("field_debitMonth",$due_date);
     }
 
     private function due_date(){
@@ -968,6 +972,12 @@ class Rental_applications extends Front_Controller
         $contractno = md5(time().$this->session->userdata('field_initials'));
         $this->session->set_userdata("contractno",$contractno);
 
+    }
+
+    private function keep_safe($key,$value)
+    {
+        $encoded = $this->encrypt->encode($value);
+        $this->session->set_userdata($key,$encoded);
     }
 }
 

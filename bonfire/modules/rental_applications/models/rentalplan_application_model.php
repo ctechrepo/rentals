@@ -62,6 +62,8 @@ class rentalplan_application_model extends MY_Model{
 
             ->display_as('contract_id','Contract Number')
             ->callback_column('contract_id',array($this,'_callback_contract_id'))
+
+            ->callback_delete(array($this,'_callback_delete'))
         ;
         //$crud->fields();
         //$crud->required_fields();
@@ -76,6 +78,37 @@ class rentalplan_application_model extends MY_Model{
     {
        return anchor("assets/pdf/secure_$value.pdf",$value);
     }
+
+    public function _callback_delete($primary_key){
+
+        $this->db->where('application_id',$primary_key);
+        $contract = $this->db->get($this->table)->row();
+
+
+        $delete_contract = ( empty($contract) )?NULL:$contract->contract_id;
+
+        if (empty($delete_contract)){return false;}
+
+        $dir1 = ROOTPATH.'/assets/fdf/';
+        $dir2 = ROOTPATH.'/assets/pdf/';
+
+        $file1 = $dir2.'secure_'.$delete_contract.'.pdf';
+        $file2 = $dir2.'unsecure_'.$delete_contract.'.pdf';
+
+        $file3 = $dir1.'secure_'.$delete_contract.'.fdf';
+        $file4 = $dir1.'unsecure_'.$delete_contract.'.fdf';
+
+        @unlink($file1);
+        @unlink($file2);
+        @unlink($file3);
+        @unlink($file4);
+
+        $this->db->where('application_id',$primary_key);
+        $this->db->delete($this->table);
+        return true;
+    }
+
+
 
     private function new_contracts(){
         $this->load->helper('file');

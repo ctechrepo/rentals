@@ -1,7 +1,7 @@
 <?php
 	// Setup our default assets to load.
 	Assets::add_js( js_path().'bootstrap.min.js' );
-	Assets::add_css( array('bootstrap.min.css', 'bootstrap-responsive.min.css'));
+	Assets::add_css( array('website.css','bootstrap.min.css', 'bootstrap-responsive.min.css'));
 			
 	$inline  = '$(".dropdown-toggle").dropdown();';
 	$inline .= '$(".tooltips").tooltip();';
@@ -11,5 +11,5 @@
 
 	Template::block('header', 'parts/head');
 
-	Template::block('topbar', 'parts/topbar');
+	Template::block('topbar', 'parts/websiteheader');
 ?>

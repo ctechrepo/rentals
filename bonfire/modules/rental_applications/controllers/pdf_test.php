@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Fdf_pdf extends Front_Controller {
+class Pdf_test extends Front_Controller {
 
     private $pdf_form;
     private $filled_data;
@@ -10,6 +10,7 @@ class Fdf_pdf extends Front_Controller {
     public function __construct(){
         parent::__construct();
         $this->load->helper('createXFDF');
+        $this->load->library('Pdfform');
     }
 
     public function __init($pdf_form,$filled_data)
@@ -26,7 +27,7 @@ class Fdf_pdf extends Front_Controller {
 
     public function view($pdf_id)
     {
-
+        echo $pdf_id;
     }
 
     public function email($pdf_id)
@@ -38,6 +39,18 @@ class Fdf_pdf extends Front_Controller {
     {
 
     }
+
+    public function decode($filename)
+    {
+        //$form_pdf = ROOTPATH."/".$this->pdf_form;
+        $form_pdf = realpath("assets/pdf/contract.pdf");
+
+        $this->pdfform->__init($form_pdf,array() );
+
+        $this->pdfform->decode($filename,array("contractno"));
+    }
+
+
 
     public function create($filename)
     {

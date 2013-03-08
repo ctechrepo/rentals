@@ -25,6 +25,8 @@ class Ajax extends Front_Controller
         }*/
         $this->load->helper(array('form', 'url'));
 
+        $this->load->library('pdfform');
+
         $this->load->library('encrypt');
         $this->encrypt->set_cipher(MCRYPT_BLOWFISH);
 
@@ -251,13 +253,9 @@ class Ajax extends Front_Controller
 
         $this->response['data'] = $data;
 
-        //sorry codeIgniter but I don't want to repeat myself
-        require_once __DIR__.'/fdf_pdf.php';
+        $this->pdfform->__init($form,$data);
+        $this->pdfform->create($level.'_'.$contractno);
 
-        $pdf = new Fdf_pdf();
-        $pdf->__init($form,$data);
-        $pdf->create($level.'_'.$contractno);
-        //$this->response['data'] = $this->session->flashdata('filled_data');
     }
 
 

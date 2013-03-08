@@ -35,6 +35,8 @@ class Ajax extends Front_Controller
 
     }
 
+
+    public function index(){}
     /**
      * Ajax request from the accessories page.
      *

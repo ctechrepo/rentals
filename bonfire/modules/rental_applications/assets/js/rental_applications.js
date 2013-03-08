@@ -141,10 +141,6 @@ baseUrl = "//localhost:8888/rentals/rental_applications/";
  }
 
  function createReceipt(level){
-     //var params = 'ci_csrf_token='+csrf_token;
-     //params += '&resource='+resource;
-     //params += '&security='+level;
-     //params += '&getReceipt='+'yes';
 
      var params = {ci_csrf_token: csrf_token,
                resource: resource,

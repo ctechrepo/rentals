@@ -83,8 +83,8 @@ class Pdfform {
 
     public function create($filename)
     {
-        echo $filename." ".$this->pdf_form."<br>";
-        var_dump($this->filled_data);
+        //TODO add config file and call variables from config
+        //TODO add updates from live app
 
         //data to be used
         $filled_data = $this->filled_data;
@@ -111,8 +111,6 @@ class Pdfform {
         //command line execution for the tool kit
         $pass_thru = "$program \"$form_pdf\" fill_form \"$fdf_path\" output \"$pdf_path\" flatten";
 
-        echo $pass_thru;
-
         try{
             //save the fdf
             $bytes = file_put_contents($fdf_path,$data_fdf);
@@ -120,14 +118,10 @@ class Pdfform {
         catch (Exception $e)
         {
             echo $e->getMessage();
+            exit;
         }
 
-        //save the pdf and send as an attachment.
-        //header("Content-type: application/pdf");
-        //header('Content-Disposition: attachment; filename="'.$filename.'.pdf" ');
         passthru($pass_thru);
-        //exit;
-
 
     }
 

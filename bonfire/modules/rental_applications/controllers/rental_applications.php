@@ -65,6 +65,14 @@ class Rental_applications extends Front_Controller
      */
     public function band(){
 
+        //check if they already completed an application
+        if ($this->session->userdata("completed_rental_applicaton") === 'yes')
+        {
+            $this->session->unset_userdata("completed_rental_applicaton");
+            redirect('/rental_applications/band/page/1');
+            exit;
+        }
+
         Template::set('skip_page3',FALSE);
         //input
         $curr_page = $page = $this->uri->segment(4)?$this->uri->segment(4):1; //check_uri for current_page
@@ -196,6 +204,14 @@ class Rental_applications extends Front_Controller
      * @return void
      */
     public function orchestra(){
+
+        //check if they already completed an application
+        if ($this->session->userdata("completed_rental_applicaton") === 'yes')
+        {
+            $this->session->unset_userdata("completed_rental_applicaton");
+            redirect('/rental_applications/band/page/1');
+            exit;
+        }
 
         Template::set('skip_page3',FALSE);
         //input
@@ -330,6 +346,14 @@ class Rental_applications extends Front_Controller
      */
     public function bravo(){
 
+        //check if they already completed an application
+        if ($this->session->userdata("completed_rental_applicaton") === 'yes')
+        {
+            $this->session->unset_userdata("completed_rental_applicaton");
+            redirect('/rental_applications/band/page/1');
+            exit;
+        }
+
         $resource = 'bravo';
 
         //------------static variables that may change in the future------//
@@ -440,152 +464,6 @@ class Rental_applications extends Front_Controller
         Template::set('pagination',$this->pagination->create_links());
         Template::set('page',$curr_page);
         Template::set('resource',$resource);
-        Template::render();
-    }
-    /**
-     * Displays the bravo page
-     *
-     * @return void
-     */
-    public function old_bravo(){
-        $page = $this->uri->segment(4)?$this->uri->segment(4):1; //check_uri for current_page
-
-        $input = $this->input->get('instrument'); //http get variable instrument
-        $instrument_id = empty($input)?$this->get_userdata('instrument_id'):$input;
-
-        $input2 = $this->input->get('group'); //http get variable group
-        $group_id = empty($input2)?$this->get_userdata('group_id'):$input2;
-
-        //set session variables
-        $this->set_userdata('instrument_id',$instrument_id);
-        $this->set_userdata('group_id',$group_id);
-
-        if (!empty($instrument_id)){
-            $instrument = $this->get_instrument($instrument_id);
-            Template::set('selected_instrument', $instrument);
-            $this->keep_safe("field_instrumentName",$instrument->product_name);
-
-            $rental_details = $this->get_rental_details($instrument_id,'bravo');
-
-            Template::set('plan_description',$rental_details->rental_description);
-
-            Template::set('m_r_price',number_format($rental_details->maintenance_price+ $rental_details->replacement_price,2));
-
-            Template::set('monthly_rental',number_format($rental_details->base_rental_price,2));
-            //var_dump($rental_details);
-            //die();
-            $due_date = date('m/d/Y',mktime(0,0,0,date("n")+1,date("j")+10));
-            Template::set('due_date',$due_date);
-        }
-
-        $rental_forms = $this->get_forms('bravo');
-
-        //data containers for various sections
-        $general_information = array();
-        $employer_information = array();
-        $spouse_information = array();
-        $reference_information = array();
-        $payment_information = array();
-        $terms_information = array();
-
-        $add_to = null;//reference pointer
-
-        foreach ($rental_forms as $form)
-        {
-            $sections = $form[0];
-            $fields = $form[1];
-
-            foreach ($sections as $item)
-            {
-                //assign the correct array to the pointer
-                switch($item->formsection_name)
-                {
-                    case "General Information": $add_to =& $general_information;
-                    break;
-                    case "Employer Information": $add_to =& $employer_information;
-                    break;
-                    case "Spouse's Information": $add_to =& $spouse_information;
-                    break;
-                    case "Payment Information": $add_to =& $payment_information;
-                    break;
-                    case "Reference's Information": $add_to =& $reference_information;
-                    break;
-                    case "terms": $add_to =& $terms_information;
-                    break;
-                }
-                //populate the array -- pass by the pointer
-                array_push($add_to,$item);
-                if (isset($fields[$item->formsection_id])){
-                    array_push($add_to,$fields[$item->formsection_id]);
-                }
-            }
-        }
-        Template::set('general_information',$general_information);
-        Template::set('employer_information',$employer_information);
-        Template::set('spouse_information',$spouse_information);
-        Template::set('reference_information',$reference_information);
-        Template::set('payment_information',$payment_information);
-        Template::set('terms_information',$terms_information);
-
-
-        switch($page)
-        {
-            case 1:  //category selection
-                $this->load->model('category_model');
-                $cats =  $this->category_model->get_by_parent('bravo');
-                Template::set('categories', $cats);
-                break;
-
-            case 2: //rental description for the selected instrument
-            Template::set('instruments',$this->get_rental_products('bravo band',$group_id));
-            Template::set('instrument_url',site_url('rental_applications/bravo/page/3/?'));
-            break;
-
-                break;
-
-            case 3: //plan selection if multiple plans exist
-                break;
-
-            case 4: //Maintenance and Replacement Policy
-
-                break;
-
-            case 5: //Add Accessories to your rental
-
-                break;
-
-            case 6: //Rental Invoice
-
-                break;
-
-            case 7:
-
-                break;
-
-            default://404
-
-        }
-
-
-        //set pagination
-        $this->load->library('pagination');
-        $config_pagination['base_url'] = site_url('/rental_applications/bravo/page/');
-        $config_pagination['total_rows'] = 10;
-        $config_pagination['per_page'] = 1;
-        $config_pagination['use_page_numbers'] = TRUE;
-        $config_pagination['uri_segment'] = 4;
-        $config_pagination['num_links'] = 10;
-        $config_pagination['first_link'] = FALSE;
-        $config_pagination['last_link'] = FALSE;
-        $config_pagination['next_link'] = FALSE;
-        $config_pagination['prev_link'] = FALSE;
-        $this->pagination->initialize($config_pagination);
-        //--------------------------------------------
-
-        //view variables
-        Template::set('pagination',$this->pagination->create_links());
-        Template::set('page',$page);
-
         Template::render();
     }
 
@@ -971,6 +849,7 @@ class Rental_applications extends Front_Controller
        }
         $contractno = md5(time().$this->session->userdata('field_initials'));
         $this->session->set_userdata("contractno",$contractno);
+        $this->session->set_userdata("completed_rental_applicaton","yes");
 
     }
 

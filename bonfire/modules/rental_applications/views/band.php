@@ -10,7 +10,7 @@
         </div>
         <div class="span2 offset1">
         <!--controls-->
-            <?php if ($page >=4): ?>
+            <?php if ($page >=4 && $page < 11): ?>
             <div class="pull-right"><button class="btn btn-prev">Prev</button><button class="btn btn-success btn-next">Next</button></div>
             <?php endif; ?>
         </div>
@@ -673,7 +673,26 @@
         <?php endif;?>
 
     <?php if ($page==11):?>
-        //Yay!!! finished
+        <div class="row">
+          <div class="span5">
+              <h3>Thank You!</h3>
+              <p>Your application has been submitted. You may now return to our home page. You will receive a copy of your Music Shoppe application via e-mail once it has been reviewed.</p>
+
+              <p></p>
+
+              <p><a href="http://www.themusicshoppe.com">Return Home</a></p>
+          </div>
+          <div class="span6 offset1">
+              <?php
+
+              $image_properties = array(
+              'src' => 'assets/images/musicshoppe.jpg',
+              'alt' => 'Rental App confirmation image'
+              );
+
+              echo img($image_properties); ?>
+          </div>
+        </div>
         <script>
            sendReceipts = 'yes';
         </script>

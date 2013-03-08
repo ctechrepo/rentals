@@ -30,7 +30,7 @@ class Ajax extends Front_Controller
 
         $this->load->library('form_validation');
         $this->form_validation->CI =& $this; //HMVC HACK for form callbacks to function right.
-
+       
     }
 
     /**
@@ -62,6 +62,7 @@ class Ajax extends Front_Controller
         $this->response['instrument']=$instrument;
 
         echo json_encode($this->response);
+        exit;
     }
 
     /**
@@ -84,6 +85,7 @@ class Ajax extends Front_Controller
         }
 
         echo json_encode($this->response);
+        exit;
     }
 
     public function notify(){
@@ -98,6 +100,7 @@ class Ajax extends Front_Controller
         $notify->send($method);
 
         echo json_encode($this->response);
+        exit;
     }
 
     /**
@@ -138,22 +141,7 @@ class Ajax extends Front_Controller
 
       $this->response['form_section'] = $form_section;
        echo json_encode($this->response);
-    }
-
-    public function test(){
-        echo "<form action='#' method='POST'>
-              <input type='hidden' name='ci_csrf_token' value='{$_COOKIE['ci_csrf_token']}'/>
-              <input type='text' name='test' />
-              <input type='submit' value='submit'/>
-        </from>";
-        var_dump($this->response);
-        die();
-    }
-
-    public function encryptTest(){
-        $testVal = $this->encrypt->encode("HelloWord");
-        echo "secure: ".$testVal."<br>";
-        echo "plain: ".$this->encrypt->decode($testVal)."<br>";
+       exit;
     }
 
     //--------------------helper methods-------------------------------------

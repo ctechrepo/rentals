@@ -30,7 +30,7 @@ class Ajax extends Front_Controller
 
         $this->load->library('form_validation');
         $this->form_validation->CI =& $this; //HMVC HACK for form callbacks to function right.
-       
+
     }
 
     /**

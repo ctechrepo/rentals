@@ -92,10 +92,10 @@ class bravo_rental_model extends MY_Model
             ->display_as($cols[0],'Product')
             ->display_as($cols[1],'Rental Plan')
             ->display_as($cols[2],'Description')
-            ->display_as($cols[3],'Base')
-            ->display_as($cols[4],'12 Month')
-            ->display_as($cols[5],'24 Month')
-            ->display_as($cols[6],'36 Month')
+            ->display_as($cols[3],'Base Monthly Rental')
+            ->display_as($cols[4],'12 Month Adjustment')
+            ->display_as($cols[5],'24 Month Adjustment')
+            ->display_as($cols[6],'36 Month Adjustment')
         ; //end of object chain
 
         //$crud->fields();
